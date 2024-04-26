@@ -1,0 +1,15 @@
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+.h-5 {
+    height: 5vh;
+    width: 100%;
+    background-color: black;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    overflow: hidden;
+}
