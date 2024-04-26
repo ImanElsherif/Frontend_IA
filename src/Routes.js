@@ -5,7 +5,7 @@ import { Register } from "./pages/auth/register/register";
 import { AdminHome } from "./pages/admin/home/admin-home";
 import { UserList } from "./pages/admin/home/user-list";
 import UpdateUserComponent from "./pages/admin/home/update-user"; 
-import { ProfessorHome } from "./pages/Professor/home/professor-home";
+import { AddJob } from "./pages/Emp/home/emp-home";
 import { Home } from "./pages/home/home";
 
 export const routes = createBrowserRouter([
@@ -37,8 +37,8 @@ export const routes = createBrowserRouter([
       { path: "/update-user/:userId", element: <UpdateUserComponent /> },
       // Professor Routes
       {
-        path: "/professor-home",
-        element: <ProfessorHome />,
+        path: "/emp-home",
+        element: <AddJob />,
       },
 
       {

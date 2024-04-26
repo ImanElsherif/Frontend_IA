@@ -30,11 +30,16 @@ export const Login = () => {
         console.log(data);
         setLogin({ ...login, loading: false });
         const user = jwt(data.data.token);
+        console.log('user',user);
+        localStorage.setItem('token', data.token); // Store token
+        localStorage.setItem('userId', user.nameid); 
+        const userId = localStorage.getItem('userId');
+console.log("Retrieved userID:", userId);// Assuming the decoded token has userId
         setAuthToken(data.data.token);
         if (user.role === "Admin") {
           navigate("/admin-home");
-        } else if (user.role === "Professor") {
-          navigate("/professor-home");
+        } else if (user.role === "employer") {
+          navigate("/emp-home");
         }
       })
       .catch((errors) => {

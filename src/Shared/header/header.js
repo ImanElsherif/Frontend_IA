@@ -31,18 +31,17 @@ export const AppHeader = () => {
             </li>
             </>
           )}
-          {user && user.role === "Professor" && (
+          {user && user.role === "employer" && (
             <>
+            <li className="navbar-brand">
+              Employer
+            </li>
               <li className="nav-item">
-                <Link to={"/professor-home"} className="nav-link">
+                <Link to={"/emp-home"} className="nav-link">
                   Home
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link to={"/"} className="nav-link">
-                  Courses
-                </Link>
-              </li>
+          
             </>
           )}
         </ul>
