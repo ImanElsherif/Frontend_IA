@@ -11,7 +11,7 @@ const navigate = useNavigate();
   });
 
   useEffect(() => {
-    axios.get('http://localhost:5024/api/user/getAllUsers') // Adjust the API URL as necessary
+    axios.get('http://localhost:5024/api/user/employers') // Adjust the API URL as necessary
       .then(response => {
         setUsers({
           loading: false,
