@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export const JobList_seek = () => {
+  
   const [files, setFiles] = useState({});
   const [showInput, setShowInput] = useState({});
 const handleFileSelect = (event, jobId) => {

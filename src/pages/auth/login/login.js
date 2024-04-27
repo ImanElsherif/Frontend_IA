@@ -41,6 +41,9 @@ export const Login = () => {
         } else if (user.role === "employer") {
           navigate("/emp-home");
         }
+        else if (user.role === "job seeker") {
+          navigate("/seeker-home");
+        }
       })
       .catch((error) => {
         if (error.response.status === 401) {
