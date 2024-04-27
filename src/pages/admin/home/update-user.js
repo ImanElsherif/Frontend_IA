@@ -1,54 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const UpdateUserComponent = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    loading: false,
-    data: {
-      name: '',
-      email: '',
-      password: '',  // Assuming you might need to update password, if it's permissible
-      userTypeId: '',
-      departmentId: '',
-      nationalCode: '',
-      gender: '',
-    },
-    error: null,
+
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    companyDescription: '', // Add companyDescription field to userData state
+    contactInfo: '', // Add contactInfo field to userData state
   });
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
-    setUser({ ...user, loading: true });
+    setLoading(true);
     axios.get(`http://localhost:5024/api/user/${userId}`)
       .then(response => {
-        setUser({ loading: false, data: response.data, error: null });
+        const { name, email, companyDescription, contactInfo } = response.data;
+        setUserData({ name, email, companyDescription, contactInfo });
+        setLoading(false);
       })
-      .catch(error => setUser({ loading: false, data: null, error: error.message }));
+      .catch(error => {
+        setError(error.message);
+        setLoading(false);
+      });
   }, [userId]);
 
-  const handleInputChange = (key, value) => {
-    setUser(prev => ({
-      ...prev,
-      data: {
-        ...prev.data,
-        [key]: value
-      }
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUserData(prevData => ({
+      ...prevData,
+      [name]: value
     }));
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    axios.put(`http://localhost:5024/api/user/${userId}`, user.data)
-      .then(() => {
-        navigate('/user-list'); // Navigate to user list or another success page
-      })
-      .catch(error => setUser({ ...user, error: error.message }));
+    try {
+      await axios.put(`http://localhost:5024/api/user/${userId}`, userData);
+      navigate('/user-list');
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
-  if (user.loading) return <div>Loading...</div>;
-  if (user.error) return <div>Error: {user.error}</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="container h-100">
@@ -64,8 +66,9 @@ const UpdateUserComponent = () => {
                     type="text"
                     className="form-control"
                     id="name"
-                    value={user.data.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    name="name"
+                    value={userData.name}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="mb-3">
@@ -74,57 +77,43 @@ const UpdateUserComponent = () => {
                     type="email"
                     className="form-control"
                     id="email"
-                    value={user.data.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    name="email"
+                    value={userData.email}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="nationalCode" className="form-label">National Code</label>
+                  <label htmlFor="password" className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="password"
+                    name="password"
+                    value={userData.password}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="companyDescription" className="form-label">Company Description</label>
                   <input
                     type="text"
                     className="form-control"
-                    id="nationalCode"
-                    value={user.data.nationalCode}
-                    onChange={(e) => handleInputChange('nationalCode', e.target.value)}
+                    id="companyDescription"
+                    name="companyDescription"
+                    value={userData.companyDescription}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="userTypeId" className="form-label">Role</label>
-                  <select
+                  <label htmlFor="contactInfo" className="form-label">Contact Info</label>
+                  <input
+                    type="text"
                     className="form-control"
-                    id="userTypeId"
-                    value={user.data.userTypeId}
-                    onChange={(e) => handleInputChange('userTypeId', e.target.value)}
-                  >
-                    {/* Assuming you have the roles from somewhere, you would map them here like this: */}
-                    {/* {roles.map(role => (
-                      <option key={role.id} value={role.id}>{role.name}</option>
-                    ))} */}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="departmentId" className="form-label">Department</label>
-                  <select
-                    className="form-control"
-                    id="departmentId"
-                    value={user.data.departmentId}
-                    onChange={(e) => handleInputChange('departmentId', e.target.value)}
-                  >
-                    {/* Assuming you have the departments from somewhere, you would map them here */}
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="gender" className="form-label">Gender</label>
-                  <select
-                    className="form-control"
-                    id="gender"
-                    value={user.data.gender}
-                    onChange={(e) => handleInputChange('gender', e.target.value)}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
+                    id="contactInfo"
+                    name="contactInfo"
+                    value={userData.contactInfo}
+                    onChange={handleInputChange}
+                  />
                 </div>
                 <button type="submit" className="btn btn-primary">Update User</button>
               </form>
