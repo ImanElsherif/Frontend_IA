@@ -29,6 +29,11 @@ export const AppHeader = () => {
                 Users
               </Link>
             </li>
+            <li className="nav-item">
+              <Link to={"/job-list"} className="nav-link">
+                Jobs
+              </Link>
+            </li>
             </>
           )}
           {user && user.role === "employer" && (
