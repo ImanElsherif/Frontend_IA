@@ -49,6 +49,19 @@ export const AppHeader = () => {
           
             </>
           )}
+          {user && user.role === "job seeker" && (
+            <>
+            <li className="navbar-brand">
+            Job seeker
+            </li>
+              <li className="nav-item">
+                <Link to={"/seeker-home"} className="nav-link">
+                  Home
+                </Link>
+              </li>
+          
+            </>
+          )}
         </ul>
         <ul className="navbar-nav ml-auto">
           {!token && (

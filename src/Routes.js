@@ -7,6 +7,7 @@ import { UserList } from "./pages/admin/home/user-list";
 import { JobList } from "./pages/admin/home/job-list";
 import UpdateUserComponent from "./pages/admin/home/update-user"; 
 import { AddJob } from "./pages/Emp/home/emp-home";
+import { JobList_seek } from "./pages/seeker/home/seeker-home";
 import { Home } from "./pages/home/home";
 
 export const routes = createBrowserRouter([
@@ -31,24 +32,20 @@ export const routes = createBrowserRouter([
 
       // Admin Routes
       {
-        path: "/admin-home", // home page
-        element: <AdminHome />,
-      },
+        path: "/admin-home",element: <AdminHome />,},
       { path: "/user-list",element: <UserList /> },
       { path: "/update-user/:userId", element: <UpdateUserComponent /> },
       { path: "/job-list",element: <JobList /> },
       
       
       // Emp Routes
-      {
-        path: "/emp-home",
-        element: <AddJob />,
-      },
+      {path: "/emp-home",element: <AddJob />,},
 
-      {
-        path: "*",
-        element: <Navigate to={"/"} />,
-      },
+      // Seeker Routes
+      {path: "/seeker-home",element: <JobList_seek />,},
+
+
+      {path: "*",element: <Navigate to={"/"} />,},
     ],
   },
 ]);
