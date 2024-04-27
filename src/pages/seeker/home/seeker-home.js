@@ -75,15 +75,32 @@ const handleFileSelect = (event, jobId) => {
         'Content-Type': 'multipart/form-data'
       }
     })
-    .then(() => {
-      alert('Proposal added successfully!');
-      fetchJobs();  // Refresh the list
-      setShowInput(prev => ({ ...prev, [jobId]: false }));  // Hide the input after submission
-    })
-    .catch(error => {
-      console.error('Failed to create proposal:', error);
-      alert('Failed to add proposal. Please try again.');
-    });
+      .then(() => {
+        // Increment proposal count in frontend
+        const updatedJobsData = jobs.data.map(job => {
+          if (job.jobId === jobId) {
+            return { ...job, numOfProposals: (job.numOfProposals || 0) + 1 };
+          }
+          return job;
+        });
+        setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
+  
+        // Increment proposal count in backend
+        axios.patch(`http://localhost:5024/api/jobs/${jobId}/increment-proposals`)
+          .then(() => {
+            alert('Proposal added successfully!');
+            fetchJobs();  // Refresh the list
+            setShowInput(prev => ({ ...prev, [jobId]: false }));  // Hide the input after submission
+          })
+          .catch(error => {
+            console.error('Failed to increment proposals in backend:', error);
+            alert('Failed to add proposal. Please try again.');
+          });
+      })
+      .catch(error => {
+        console.error('Failed to create proposal:', error);
+        alert('Failed to add proposal. Please try again.');
+      });
   };
   
   
