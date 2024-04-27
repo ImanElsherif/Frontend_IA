@@ -46,6 +46,11 @@ export const AppHeader = () => {
                   Home
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link to={"/prop-list"} className="nav-link">
+                  Proposals
+                </Link>
+              </li>
           
             </>
           )}

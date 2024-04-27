@@ -5,6 +5,7 @@ import { Register } from "./pages/auth/register/register";
 import { AdminHome } from "./pages/admin/home/admin-home";
 import { UserList } from "./pages/admin/home/user-list";
 import { JobList } from "./pages/admin/home/job-list";
+import { ProposalList } from "./pages/Emp/home/prop-list";
 import UpdateUserComponent from "./pages/admin/home/update-user"; 
 import { AddJob } from "./pages/Emp/home/emp-home";
 import { JobList_seek } from "./pages/seeker/home/seeker-home";
@@ -40,6 +41,7 @@ export const routes = createBrowserRouter([
       
       // Emp Routes
       {path: "/emp-home",element: <AddJob />,},
+      {path: "/prop-list",element: <ProposalList />,},
 
       // Seeker Routes
       {path: "/seeker-home",element: <JobList_seek />,},
