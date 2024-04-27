@@ -30,11 +30,11 @@ export const Login = () => {
         console.log(data);
         setLogin({ ...login, loading: false });
         const user = jwt(data.data.token);
-        console.log('user',user);
+        console.log('user', user);
         localStorage.setItem('token', data.token); // Store token
         localStorage.setItem('userId', user.nameid); 
         const userId = localStorage.getItem('userId');
-console.log("Retrieved userID:", userId);// Assuming the decoded token has userId
+        console.log("Retrieved userID:", userId);// Assuming the decoded token has userId
         setAuthToken(data.data.token);
         if (user.role === "Admin") {
           navigate("/admin-home");
@@ -42,11 +42,28 @@ console.log("Retrieved userID:", userId);// Assuming the decoded token has userI
           navigate("/emp-home");
         }
       })
-      .catch((errors) => {
-        if (typeof errors.response.data.message === "string") {
-          setLogin({ ...login, loading: false, err: [{ msg: errors.response.data.message }] });
+      .catch((error) => {
+        if (error.response.status === 401) {
+          // Unauthorized: Incorrect email or password
+          setLogin({
+            ...login,
+            loading: false,
+            err: [{ msg: "Incorrect email or password. Please try again." }],
+          });
+        } else if (error.response.status === 404) {
+          // Not Found: Email not registered
+          setLogin({
+            ...login,
+            loading: false,
+            err: [{ msg: "Email not registered. Please sign up." }],
+          });
         } else {
-          setLogin({ ...login, loading: false, err: errors.response.data.message });
+          // Other errors
+          setLogin({
+            ...login,
+            loading: false,
+            err: [{ msg: "An unexpected error occurred. Please try again later." }],
+          });
         }
       });
   };
@@ -111,7 +128,7 @@ console.log("Retrieved userID:", userId);// Assuming the decoded token has userI
                       </label>
                       <input
                         className="form-control"
-                        type="text"
+                        type="password"
                         id="password"
                         ref={(val) => {
                           form.current.password = val;
