@@ -108,22 +108,22 @@ export const JobList_seek = () => {
         'Content-Type': 'multipart/form-data'
       }
     })
-      .then(() => {
-        const updatedJobsData = jobs.data.map(job => {
-          if (job.jobId === jobId) {
-            return { ...job, numOfProposals: (job.numOfProposals || 0) + 1 };
-          }
-          return job;
-        });
-        setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
-  
-        setShowInput(prev => ({ ...prev, [jobId]: false }));
-        alert('Proposal added successfully!');
-      })
-      .catch(error => {
-        console.error('Failed to create proposal:', error);
-        alert('Failed to add proposal. Please try again.');
+    .then(() => {
+      const updatedJobsData = jobs.data.map(job => {
+        if (job.jobId === jobId) {
+          return { ...job, numOfProposals: (job.numOfProposals || 0) + 1 }; // Increment numOfProposals by 1
+        }
+        return job;
       });
+      setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
+  
+      setShowInput(prev => ({ ...prev, [jobId]: false }));
+      alert('Proposal added successfully!');
+    })
+    .catch(error => {
+      console.error('Failed to create proposal:', error);
+      alert('Failed to add proposal. Please try again.');
+    });
   };
   
   
