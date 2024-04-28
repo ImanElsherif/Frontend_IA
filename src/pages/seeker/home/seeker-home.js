@@ -152,6 +152,7 @@ export const JobList_seek = () => {
       setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
   
       setShowInput(prev => ({ ...prev, [jobId]: false }));
+      setUserProposals(prevProposals => ({ ...prevProposals, [jobId]: 'Pending' })); // Update userProposals here
       alert('Proposal added successfully!');
     })
     .catch(error => {
@@ -159,6 +160,7 @@ export const JobList_seek = () => {
       alert('Failed to add proposal. Please try again.');
     });
   };
+  
   
   const filteredJobs = jobs.data.filter(job => {
     const titleMatch = job.jobName.toLowerCase().includes(searchCriteria.title.toLowerCase());
