@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import "./seeker-home.css";
 
 export const JobList_seek = () => {
   const [files, setFiles] = useState({});
   const [showInput, setShowInput] = useState({});
   const [jobNames, setJobNames] = useState({});
+  const [searchCriteria, setSearchCriteria] = useState({
+    title: '',
+    location: '',
+    minDate: '',
+    maxDate: '',
+    minBudget: '',
+    maxBudget: '',
+  });
 
   const handleFileSelect = (event, jobId) => {
     setFiles(prevFiles => ({
@@ -18,8 +27,6 @@ export const JobList_seek = () => {
     data: [],
     error: null,
   });
-
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchJobs();
@@ -126,36 +133,80 @@ export const JobList_seek = () => {
     });
   };
   
-  
+  const filteredJobs = jobs.data.filter(job => {
+    const titleMatch = job.jobName.toLowerCase().includes(searchCriteria.title.toLowerCase());
+    const locationMatch = job.location.toLowerCase().includes(searchCriteria.location.toLowerCase());
+    const minDateMatch = searchCriteria.minDate ? new Date(job.postCreationDate) >= new Date(searchCriteria.minDate) : true;
+    const maxDateMatch = searchCriteria.maxDate ? new Date(job.postCreationDate) <= new Date(searchCriteria.maxDate) : true;
+    const minBudgetMatch = searchCriteria.minBudget ? job.jobBudget >= parseFloat(searchCriteria.minBudget) : true;
+    const maxBudgetMatch = searchCriteria.maxBudget ? job.jobBudget <= parseFloat(searchCriteria.maxBudget) : true;
+    return titleMatch && locationMatch && minDateMatch && maxDateMatch && minBudgetMatch && maxBudgetMatch;
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchCriteria(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
     <div className="container">
       <h1>Job List</h1>
-      <ul className="list-group">
-        {jobs.data.map(job => (
-          <li key={job.jobId} className="list-group-item">
-            <div className="d-flex flex-column align-items-start">
-              <strong>{job.jobName}</strong>
-              {!showInput[job.jobId] ? (
-                <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
-                  Add Proposal
-                </button>
-              ) : (
-                <>
-                  <input
-                    type="file"
-                    className="form-control-file mt-2"
-                    onChange={(e) => handleFileSelect(e, job.jobId)}
-                  />
-                  <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
-                    Submit Proposal
+      <div className="search-container">
+        <div className="search-field">
+          <label>Title:</label>
+          <input type="text" name="title" value={searchCriteria.title} onChange={handleInputChange} />
+        </div>
+        <div className="search-field">
+          <label>Location:</label>
+          <input type="text" name="location" value={searchCriteria.location} onChange={handleInputChange} />
+        </div>
+        <div className="search-field">
+          <label>Min Date:</label>
+          <input type="date" name="minDate" value={searchCriteria.minDate} onChange={handleInputChange} />
+        </div>
+        <div className="search-field">
+          <label>Max Date:</label>
+          <input type="date" name="maxDate" value={searchCriteria.maxDate} onChange={handleInputChange} />
+        </div>
+        <div className="search-field">
+          <label>Min Budget:</label>
+          <input type="number" name="minBudget" value={searchCriteria.minBudget} onChange={handleInputChange} />
+        </div>
+        <div className="search-field">
+          <label>Max Budget:</label>
+          <input type="number" name="maxBudget" value={searchCriteria.maxBudget} onChange={handleInputChange} />
+        </div>
+      </div>
+      <div className="job-list-container">
+        <ul className="list-group">
+          {filteredJobs.map(job => (
+            <li key={job.jobId} className="list-group-item">
+              <div className="d-flex flex-column align-items-start">
+                <strong>{job.jobName}</strong>
+                {!showInput[job.jobId] ? (
+                  <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
+                    Add Proposal
                   </button>
-                </>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      className="form-control-file mt-2"
+                      onChange={(e) => handleFileSelect(e, job.jobId)}
+                    />
+                    <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
+                      Submit Proposal
+                    </button>
+                  </>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
