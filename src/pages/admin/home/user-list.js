@@ -55,7 +55,7 @@ export const UserList = () => {
 
   return (
     <div className="container">
-      <h1>User List</h1>
+      <h1>Company List</h1>
       <div className="list-group" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
         {users.data.map(user => (
           <div key={user.id} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">

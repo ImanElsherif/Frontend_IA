@@ -132,12 +132,13 @@ const SavedJobsList = () => {
               <div className="row">
                 <div className="col-md-8">
                 <h5><strong>Job Title: {job.jobTitle}</strong></h5>
-                  <p><strong>Employer:</strong> {employerNames[job.employerId]}</p>
+                  <p><strong>Company Name:</strong> {employerNames[job.employerId]}</p>
+                  <p><strong>Description:</strong> {job.jobDescription}</p>
                   <p><strong>Location:</strong> {job.location}</p>
                   <p><strong>Budget:</strong> ${job.jobBudget}</p>
                   <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
                   <p><strong>Type:</strong> {job.jobType}</p>
-                  <p><strong>Description:</strong> {job.jobDescription}</p>
+                  
                 </div>
                 <div className="col-md-4">
                   <div className="text-end">

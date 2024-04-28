@@ -8,6 +8,7 @@ export const JobList_seek = () => {
   const [files, setFiles] = useState({});
   const [showInput, setShowInput] = useState({});
   const [jobNames, setJobNames] = useState({});
+  const [userProposals, setUserProposals] = useState({});
   const [searchCriteria, setSearchCriteria] = useState({
     title: '',
     location: '',
@@ -32,6 +33,7 @@ export const JobList_seek = () => {
 
   useEffect(() => {
     fetchJobs();
+    fetchUserProposals();
   }, []);
 
   const fetchJobs = () => {
@@ -65,6 +67,23 @@ export const JobList_seek = () => {
       console.error(`Failed to fetch job name for ID ${jobId}:`, error);
       return 'Unknown';
     }
+  };
+
+  const fetchUserProposals = () => {
+    // Fetch proposals submitted by the current user
+    const userId = localStorage.getItem('userId');
+    axios.get(`http://localhost:5024/api/proposals/user/${userId}`)
+      .then(response => {
+        // Organize user proposals by jobId
+        const userProposalsByJob = {};
+        response.data.forEach(proposal => {
+          userProposalsByJob[proposal.jobId] = proposal.status;
+        });
+        setUserProposals(userProposalsByJob);
+      })
+      .catch(error => {
+        console.error('Failed to fetch user proposals:', error);
+      });
   };
 
   useEffect(() => {
@@ -222,50 +241,64 @@ export const JobList_seek = () => {
             <h1>Job List</h1>
             <ul className="list-group">
             {filteredJobs.map(job => (
-              <li key={job.jobId} className="list-group-item">
-                <div className="row">
-                  <div className="col-md-8">
-                    <h5><strong>Job Title: {job.jobName}</strong></h5>
-                    <p><strong>Location:</strong> {job.location}</p>
-                    <p><strong>Budget:</strong> ${job.jobBudget}</p>
-                    <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
-                    <p><strong>Type:</strong> {job.jobType}</p>
-                    <p><strong>Description:</strong> {job.jobDescription}</p>
-                    <p><strong>Employer:</strong> {jobNames[job.employerId]}</p> {/* Display employer's username */}
-                  </div>
-                  <div className="col-md-4">
-                    {/* Save Job button */}
-                    <div className="text-end">
-                      <button
-                        className={`btn btn-sm ${job.isSaved ? 'btn-success' : 'btn-outline-secondary'} ms-2`}
-                        onClick={() => handleSaveJob(job.jobId)}
-                      >
-                        <i className="fas fa-heart"></i> Save
-                      </button>
-                    </div>
-                    {/* Add Proposal button and file input */}
-                    <div className="text-end mt-3">
-                      {!showInput[job.jobId] ? (
-                        <button className="btn btn-primary" onClick={() => handleShowInput(job.jobId)}>
-                          Add Proposal
-                        </button>
-                      ) : (
-                        <>
-                          <input
-                            type="file"
-                            className="form-control-file mt-2"
-                            onChange={(e) => handleFileSelect(e, job.jobId)}
-                          />
-                          <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
-                            Submit Proposal
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </li>
-            ))}
+  <li key={job.jobId} className="list-group-item">
+    <div className="row">
+      <div className="col-md-8">
+        <h5><strong>Job Title: {job.jobName}</strong></h5>
+        <p><strong>Company Name::</strong> {jobNames[job.employerId]}</p>
+        <p><strong>Description:</strong> {job.jobDescription}</p>
+        <p><strong>Location:</strong> {job.location}</p>
+        <p><strong>Budget:</strong> ${job.jobBudget}</p>
+        <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
+        <p><strong>Type:</strong> {job.jobType}</p>
+        {(!showInput[job.jobId] && userProposals[job.jobId]) && ( // Only show if there is no Add Proposal button
+          <p><strong>Your Proposal Status:</strong> 
+            <button
+              className={`btn btn-sm ${userProposals[job.jobId] === 'Accepted' ? 'btn-success' : userProposals[job.jobId] === 'Pending' ? 'btn-warning' : 'btn-danger'} ms-2`}
+            >
+              {userProposals[job.jobId] || 'No Proposal'}
+            </button>
+          </p>
+        )}
+      </div>
+      <div className="col-md-4">
+        {/* Save Job button */}
+        <div className="text-end">
+          <button
+            className={`btn btn-sm ${job.isSaved ? 'btn-success' : 'btn-outline-secondary'} ms-2`}
+            onClick={() => handleSaveJob(job.jobId)}
+          >
+            <i className="fas fa-heart"></i> Save
+          </button>
+        </div>
+        {/* Add Proposal button and file input */}
+        <div className="text-end mt-3">
+          {!showInput[job.jobId] && !userProposals[job.jobId] ? (
+            <button className="btn btn-primary" onClick={() => handleShowInput(job.jobId)}>
+              Add Proposal
+            </button>
+          ) : (
+            <>
+              {!userProposals[job.jobId] && ( // Only show if there is no proposal
+                <>
+                  <input
+                    type="file"
+                    className="form-control-file mt-2"
+                    onChange={(e) => handleFileSelect(e, job.jobId)}
+                  />
+                  <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
+                    Submit Proposal
+                  </button>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  </li>
+))}
+
             </ul>
           </div>
         </div>

@@ -85,7 +85,7 @@ export const JobList = () => {
             <li key={job.id} className="list-group-item d-flex justify-content-between align-items-center">
               <div className="col-md-8">
                 <h5><strong>Job Title: {job.jobTitle}</strong></h5>
-                <p><strong>Employer:</strong> {employerNames[job.employerId]}</p>
+                <p><strong>Company Name:</strong> {employerNames[job.employerId]}</p>
                 <p><strong>Location:</strong> {job.location}</p>
                 <p><strong>Budget:</strong> ${job.jobBudget}</p>
                 <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
