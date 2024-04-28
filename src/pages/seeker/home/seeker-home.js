@@ -9,6 +9,7 @@ export const JobList_seek = () => {
   const [showInput, setShowInput] = useState({});
   const [jobNames, setJobNames] = useState({});
   const [userProposals, setUserProposals] = useState({});
+  const [message, setMessage] = useState({ text: '', type: '' });
   const [searchCriteria, setSearchCriteria] = useState({
     title: '',
     location: '',
@@ -126,7 +127,7 @@ export const JobList_seek = () => {
 
   const handleAddProposal = (jobId) => {
     if (!files[jobId]) {
-      alert("Please select a file to attach with the proposal.");
+      setMessage({ text: "Please select a file to attach with the proposal.", type: 'error' });
       return;
     }
   
@@ -153,11 +154,11 @@ export const JobList_seek = () => {
   
       setShowInput(prev => ({ ...prev, [jobId]: false }));
       setUserProposals(prevProposals => ({ ...prevProposals, [jobId]: 'Pending' })); // Update userProposals here
-      alert('Proposal added successfully!');
+      setMessage({ text: 'Proposal added successfully!', type: 'success' });
     })
     .catch(error => {
       console.error('Failed to create proposal:', error);
-      alert('Failed to add proposal. Please try again.');
+      setMessage({ text: 'Failed to add proposal. Please try again.', type: 'error' });
     });
   };
   
@@ -193,16 +194,21 @@ export const JobList_seek = () => {
         return job;
       });
       setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
-      alert('Job saved successfully!');
+      setMessage({ text: 'Job saved successfully!', type: 'success' });
     })
     .catch(error => {
       console.error('Failed to save job:', error);
-      alert('Failed to save job. Please try again.');
+      setMessage({ text: 'Job saved successfully!', type: 'success' });
     });
   };
 
   return (
     <div className="container">
+      {message.text && (
+        <div className={`alert ${message.type === 'success' ? 'alert-success' : 'alert-danger'}`} role="alert">
+          {message.text}
+        </div>
+      )}
       <div className="row">
         {/* Search Form */}
         <div className="col-md-3">
