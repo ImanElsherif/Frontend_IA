@@ -6,6 +6,7 @@ const SavedJobsList = () => {
   const [files, setFiles] = useState({});
   const [showInput, setShowInput] = useState({});
   const [employerNames, setEmployerNames] = useState({});
+  const [proposalStatus, setProposalStatus] = useState({});
   const userId = localStorage.getItem('userId');
 
   const handleFileSelect = (event, jobId) => {
@@ -33,10 +34,10 @@ const SavedJobsList = () => {
         axios.get(`http://localhost:5024/api/savedjobs/${userId}`),
         axios.get(`http://localhost:5024/api/jobs`)
       ]);
-
+  
       const savedJobsData = savedJobsResponse.data;
       const allJobsData = jobsResponse.data;
-
+  
       const jobsWithTitles = savedJobsData.map(savedJob => {
         const job = allJobsData.find(job => job.jobId === savedJob.jobId);
         if (job) {
@@ -44,22 +45,26 @@ const SavedJobsList = () => {
         }
         return null;
       }).filter(Boolean);
-
+  
       setSavedJobs(savedJobsData);
       setJobs({
         loading: false,
         data: jobsWithTitles,
         error: null,
       });
-
+  
       const employers = {};
+      const statuses = {};
       await Promise.all(jobsWithTitles.map(async job => {
         try {
           const response = await axios.get(`http://localhost:5024/api/user/${job.employerId}`);
           employers[job.employerId] = response.data.name;
+          
+          // Fetch user proposals for each job using the fetchUserProposals function
+          fetchUserProposals(job.jobId);
+  
         } catch (error) {
           console.error(`Failed to fetch employer info for job ${job.jobId}:`, error);
-          employers[job.employerId] = 'Unknown';
         }
       }));
       setEmployerNames(employers);
@@ -72,6 +77,19 @@ const SavedJobsList = () => {
       });
     }
   };
+  
+  // Fetch proposals submitted by the current user
+  const fetchUserProposals = async (jobId) => {
+    try {
+      const userProposalsResponse = await axios.get(`http://localhost:5024/api/proposals/job/${jobId}/user/${userId}`);
+      const status = userProposalsResponse.data || 'No Proposal';
+      setProposalStatus(prevStatuses => ({ ...prevStatuses, [jobId]: status }));
+    } catch (error) {
+      console.error(`Failed to fetch proposal status for job ${jobId}:`, error);
+      setProposalStatus(prevStatuses => ({ ...prevStatuses, [jobId]: 'No Proposal' }));
+    }
+  };
+  
 
   const handleShowInput = (jobId) => {
     setShowInput(prev => ({
@@ -85,20 +103,20 @@ const SavedJobsList = () => {
       alert("Please select a file to attach with the proposal.");
       return;
     }
-
+  
     const job = jobs.data.find(job => job.jobId === jobId);
     if (!job) {
       console.error(`Job with ID ${jobId} not found.`);
       return;
     }
-
+  
     const formData = new FormData();
     formData.append('jobId', jobId);
     formData.append('jobSeekerId', userId);
     formData.append('employerId', job.employerId);
     formData.append('status', 'Pending');
     formData.append('attachment', files[jobId]);
-
+  
     axios.post(`http://localhost:5024/api/proposals`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -112,8 +130,9 @@ const SavedJobsList = () => {
         return job;
       });
       setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
-
+  
       setShowInput(prev => ({ ...prev, [jobId]: false }));
+      setProposalStatus(prevStatuses => ({ ...prevStatuses, [jobId]: 'Pending' })); // Update proposal status here
       alert('Proposal added successfully!');
     })
     .catch(error => {
@@ -121,6 +140,7 @@ const SavedJobsList = () => {
       alert('Failed to add proposal. Please try again.');
     });
   };
+  
 
   return (
     <div className="container">
@@ -131,34 +151,44 @@ const SavedJobsList = () => {
             <li key={job.jobId} className="list-group-item">
               <div className="row">
                 <div className="col-md-8">
-                <h5><strong>Job Title: {job.jobTitle}</strong></h5>
-                  <p><strong>Company Name:</strong> {employerNames[job.employerId]}</p>
-                  <p><strong>Description:</strong> {job.jobDescription}</p>
-                  <p><strong>Location:</strong> {job.location}</p>
-                  <p><strong>Budget:</strong> ${job.jobBudget}</p>
-                  <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
-                  <p><strong>Type:</strong> {job.jobType}</p>
-                  
+                  <div>
+                    <h5><strong>Job Title: {job.jobTitle}</strong></h5>
+                    <p><strong>Company Name:</strong> {employerNames[job.employerId]}</p>
+                    <p><strong>Description:</strong> {job.jobDescription}</p>
+                    <p><strong>Location:</strong> {job.location}</p>
+                    <p><strong>Budget:</strong> ${job.jobBudget}</p>
+                    <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
+                    <p><strong>Type:</strong> {job.jobType}</p>
+                    {/* Display Proposal Status with color coding */}
+                    {(!showInput[job.jobId] && proposalStatus[job.jobId] !== 'No Proposal') && (
+                      <p><strong>Your Proposal Status:</strong> 
+                        <button
+                          className={`btn btn-sm ${proposalStatus[job.jobId] === 'Accepted' ? 'btn-success' : proposalStatus[job.jobId] === 'Pending' ? 'btn-warning' : 'btn-danger'} ms-2`}
+                        >
+                          {proposalStatus[job.jobId]}
+                        </button>
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="col-md-4">
-                  <div className="text-end">
-                    {!showInput[job.jobId] ? (
+                  {/* Add Proposal Button */}
+                  {!showInput[job.jobId] && proposalStatus[job.jobId] === 'No Proposal' && (
+                    <div className="text-end">
                       <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
                         Add Proposal
                       </button>
-                    ) : (
-                      <>
-                        <input
-                          type="file"
-                          className="form-control-file mt-2"
-                          onChange={(e) => handleFileSelect(e, job.jobId)}
-                        />
-                        <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
-                          Submit Proposal
-                        </button>
-                      </>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                  {/* Choose File and Submit Proposal Buttons */}
+                  {showInput[job.jobId] && (
+                    <div className="text-end mt-2">
+                      <input type="file" onChange={(event) => handleFileSelect(event, job.jobId)} />
+                      <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
+                        Submit Proposal
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </li>
@@ -167,6 +197,8 @@ const SavedJobsList = () => {
       </div>
     </div>
   );
+  
+  
 };
 
 export default SavedJobsList;
