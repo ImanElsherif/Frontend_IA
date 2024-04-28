@@ -113,7 +113,7 @@ export const AddJob = () => {
                     </div>
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="jobDescription">Job Description</label>
-                      <textarea className="form-control" id="jobDescription" ref={(val) => form.current.jobDescription = val}></textarea>
+                      <textarea className="form-control" id="jobDescription" ref={(val) => form.current.jobDescription = val} required></textarea>
                     </div>
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="jobType">Job Type</label>
@@ -125,11 +125,11 @@ export const AddJob = () => {
                     </div>
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="jobBudget">Job Budget ($)</label>
-                      <input className="form-control" type="number" id="jobBudget" ref={(val) => form.current.jobBudget = val} required />
+                      <input className="form-control" type="number" id="jobBudget" ref={(val) => form.current.jobBudget = val} required min="0" />
                     </div>
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="location">Location</label>
-                      <input className="form-control" type="text" id="location" ref={(val) => form.current.location = val} />
+                      <input className="form-control" type="text" id="location" ref={(val) => form.current.location = val} required />
                     </div>
                     <button className="btn btn-primary" type="submit">Post Job</button>
                   </form>

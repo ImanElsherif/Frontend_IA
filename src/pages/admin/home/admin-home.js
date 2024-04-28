@@ -8,7 +8,7 @@ export const AdminHome = () => {
 
   const [register, setRegister] = useState({
     loading: false,
-    err: [],  // Initialize as an empty array
+    err: [],
     successMsg: "",
   });
 
@@ -26,17 +26,45 @@ export const AdminHome = () => {
 
     const email = form.current.email.value;
     const password = form.current.password.value;
+    const companyDescription = form.current.company_description.value;
+    const contactInfo = form.current.contact_info.value;
 
     if (password.length < 6) {
       setRegister({
         ...register,
         err: [{ msg: "Password must be at least 6 characters long." }],
-        successMsg: "", // Clear success message
+        successMsg: "",
       });
       return;
     }
 
-    setRegister({ ...register, loading: true, err: [], successMsg: "" }); // Clear errors and success message before submitting
+    // Check if company name, description, and contact info are empty
+    if (!form.current.name.value.trim()) {
+      setRegister({
+        ...register,
+        err: [{ msg: "Company name is required." }],
+        successMsg: "",
+      });
+      return;
+    }
+    if (!companyDescription.trim()) {
+      setRegister({
+        ...register,
+        err: [{ msg: "Company description is required." }],
+        successMsg: "",
+      });
+      return;
+    }
+    if (!contactInfo.trim()) {
+      setRegister({
+        ...register,
+        err: [{ msg: "Contact info is required." }],
+        successMsg: "",
+      });
+      return;
+    }
+
+    setRegister({ ...register, loading: true, err: [], successMsg: "" });
 
     try {
       const response = await axios.post(
@@ -45,9 +73,9 @@ export const AdminHome = () => {
           Name: form.current.name.value,
           Email: email,
           Password: password,
-          UserTypeId: "5", // Assuming '5' is a string as per the backend example provided
-          CompanyDescription: form.current.company_description.value,
-          ContactInfo: form.current.contact_info.value,
+          UserTypeId: "5",
+          CompanyDescription: companyDescription,
+          ContactInfo: contactInfo,
         }
       );
 
@@ -55,7 +83,7 @@ export const AdminHome = () => {
         ...register,
         loading: false,
         successMsg: "Registration successful. You can now log in.",
-        err: [], // Clear any previous errors
+        err: [],
       });
     } catch (errors) {
       if (errors.response && errors.response.status === 400) {
@@ -63,7 +91,7 @@ export const AdminHome = () => {
           ...register,
           loading: false,
           err: [{ msg: "Email already exists. Please use a different email." }],
-          successMsg: "", // Clear success message
+          successMsg: "",
         });
       } else {
         const errorMsg = errors.response?.data || [
@@ -73,7 +101,7 @@ export const AdminHome = () => {
           ...register,
           loading: false,
           err: Array.isArray(errorMsg) ? errorMsg : [errorMsg],
-          successMsg: "", // Clear success message
+          successMsg: "",
         });
       }
     }
@@ -139,63 +167,47 @@ export const AdminHome = () => {
                       type="text"
                       id="name"
                       ref={(val) => form.current.name = val}
-                      required  // Ensure frontend validation matches backend expectations
+                      required
                     />
                   </div>
                   <div className="mb-3">
-                    <label className="small mb-1" htmlFor="email">
-                      Email address
-                    </label>
+                    <label className="small mb-1" htmlFor="email">Email address</label>
                     <input
                       className="form-control"
                       type="email"
                       id="email"
-                      ref={(val) => {
-                        form.current.email = val;
-                      }}
+                      ref={(val) => form.current.email = val}
                     />
                   </div>
                   <div className="mb-3">
-                    <label className="small mb-1" htmlFor="password">
-                      Password
-                    </label>
+                    <label className="small mb-1" htmlFor="password">Password</label>
                     <input
                       className="form-control"
                       type="password"
                       id="password"
-                      ref={(val) => {
-                        form.current.password = val;
-                      }}
+                      ref={(val) => form.current.password = val}
                     />
                   </div>
                   <div className="mb-3">
-                    <label className="small mb-1" htmlFor="company_description">
-                      Company Description
-                    </label>
+                    <label className="small mb-1" htmlFor="company_description">Company Description</label>
                     <textarea
                       className="form-control"
                       id="company_description"
-                      ref={(val) => {
-                        form.current.company_description = val;
-                      }}
+                      ref={(val) => form.current.company_description = val}
+                      required
                     ></textarea>
                   </div>
                   <div className="mb-3">
-                    <label className="small mb-1" htmlFor="contact_info">
-                      Contact Info
-                    </label>
+                    <label className="small mb-1" htmlFor="contact_info">Contact Info</label>
                     <input
                       className="form-control"
                       type="text"
                       id="contact_info"
-                      ref={(val) => {
-                        form.current.contact_info = val;
-                      }}
+                      ref={(val) => form.current.contact_info = val}
+                      required
                     />
                   </div>
-                  <button className="btn btn-primary" type="submit">
-                    Register
-                  </button>
+                  <button className="btn btn-primary" type="submit">Register</button>
                 </form>
               </div>
             </div>
