@@ -7,25 +7,59 @@ const SavedJobsList = () => {
   const [showInput, setShowInput] = useState({});
   const userId = localStorage.getItem('userId');
 
-  useEffect(() => {
+  const handleFileSelect = (event, jobId) => {
+    setFiles(prevFiles => ({
+      ...prevFiles,
+      [jobId]: event.target.files[0]
+    }));
+  };
+
+  const [jobs, setJobs] = useState({
+    loading: true,
+    data: [], // Initialize with empty array
+    error: null,
+  });
+
+ useEffect(() => {
     if (userId) {
-      fetchSavedJobs();
+      fetchJobsAndSavedJobs();
     }
   }, [userId]);
 
-  const fetchSavedJobs = () => {
-    axios.get(`http://localhost:5024/api/savedjobs/${userId}`)
-      .then(async response => {
-        const jobsWithTitles = await Promise.all(response.data.map(async job => {
-          const jobTitle = await getJobName(job.jobId);
-          return { ...job, jobTitle };
-        }));
-        setSavedJobs(jobsWithTitles);
-      })
-      .catch(error => {
-        console.error('Error fetching saved jobs:', error);
+  const fetchJobsAndSavedJobs = () => {
+    Promise.all([
+      axios.get(`http://localhost:5024/api/savedjobs/${userId}`),
+      axios.get(`http://localhost:5024/api/jobs`) // Fetch all jobs
+    ])
+    .then(([savedJobsResponse, jobsResponse]) => {
+      const savedJobsData = savedJobsResponse.data;
+      const allJobsData = jobsResponse.data;
+  
+      const jobsWithTitles = savedJobsData.map(savedJob => {
+        const job = allJobsData.find(job => job.jobId === savedJob.jobId);
+        if (job) {
+          return { ...job, jobTitle: job.jobTitle };
+        }
+        return null; // Handle cases where job is not found
+      }).filter(Boolean); // Remove null values
+  
+      setSavedJobs(savedJobsData);
+      setJobs({
+        loading: false,
+        data: jobsWithTitles,
+        error: null,
       });
+    })
+    .catch(error => {
+      console.error('Error fetching jobs and saved jobs:', error);
+      setJobs({
+        loading: false,
+        data: [],
+        error: error.message,
+      });
+    });
   };
+  
 
   const getJobName = async (jobId) => {
     try {
@@ -37,19 +71,8 @@ const SavedJobsList = () => {
     }
   };
 
-  const handleFileSelect = (event, jobId) => {
-    setFiles(prevFiles => ({
-      ...prevFiles,
-      [jobId]: event.target.files[0]
-    }));
-  };
-
-  const [jobs, setJobs] = useState({
-    loading: true,
-    data: [],
-    error: null,
-  });
-
+ 
+  
 
   const handleShowInput = (jobId) => {
     setShowInput(prev => ({
@@ -107,7 +130,7 @@ const SavedJobsList = () => {
       <h1>Saved Jobs</h1>
       <div className="job-list-container">
         <ul className="list-group">
-          {savedJobs.map(job => (
+          {jobs.data.map(job => (
             <li key={job.jobId} className="list-group-item">
               <div className="d-flex flex-row align-items-center justify-content-between">
                 <div>
@@ -138,6 +161,7 @@ const SavedJobsList = () => {
       </div>
     </div>
   );
+  
 };
 
 export default SavedJobsList;
