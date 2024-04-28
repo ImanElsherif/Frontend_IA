@@ -69,11 +69,17 @@ export const JobList_seek = () => {
 
   useEffect(() => {
     const updateJobNames = async () => {
-      const updatedJobs = await Promise.all(jobs.data.map(async job => {
-        const jobName = await getJobName(job.jobId);
-        return { ...job, jobName };
+      const employers = {};
+      await Promise.all(jobs.data.map(async job => {
+        try {
+          const response = await axios.get(`http://localhost:5024/api/user/${job.employerId}`);
+          employers[job.employerId] = response.data.name;
+        } catch (error) {
+          console.error(`Failed to fetch employer info for job ${job.jobId}:`, error);
+          employers[job.employerId] = 'Unknown';
+        }
       }));
-      setJobs(prevJobs => ({ ...prevJobs, data: updatedJobs }));
+      setJobNames(employers);
     };
   
     if (!jobs.loading && jobs.data.length > 0) {
@@ -215,49 +221,55 @@ export const JobList_seek = () => {
           <div className="job-list-container mt-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
             <h1>Job List</h1>
             <ul className="list-group">
-              {filteredJobs.map(job => (
-                <li key={job.jobId} className="list-group-item">
-                  <div className="d-flex flex-row align-items-center justify-content-between">
-                    <div>
-                      <strong>{job.jobName}</strong>
-                    </div>
+            {filteredJobs.map(job => (
+              <li key={job.jobId} className="list-group-item">
+                <div className="row">
+                  <div className="col-md-8">
+                    <h5><strong>Job Title: {job.jobName}</strong></h5>
+                    <p><strong>Location:</strong> {job.location}</p>
+                    <p><strong>Budget:</strong> ${job.jobBudget}</p>
+                    <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
+                    <p><strong>Type:</strong> {job.jobType}</p>
+                    <p><strong>Description:</strong> {job.jobDescription}</p>
+                    <p><strong>Employer:</strong> {jobNames[job.employerId]}</p> {/* Display employer's username */}
+                  </div>
+                  <div className="col-md-4">
                     {/* Save Job button */}
-                    <div>
+                    <div className="text-end">
                       <button
                         className={`btn btn-sm ${job.isSaved ? 'btn-success' : 'btn-outline-secondary'} ms-2`}
                         onClick={() => handleSaveJob(job.jobId)}
                       >
-                        <i className="fas fa-heart"></i>
+                        <i className="fas fa-heart"></i> Save
                       </button>
                     </div>
-                  </div>
-                  {/* Add Proposal button and file input */}
-                  <div>
-                    {!showInput[job.jobId] ? (
-                      <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
-                        Add Proposal
-                      </button>
-                    ) : (
-                      <>
-                        <input
-                          type="file"
-                          className="form-control-file mt-2"
-                          onChange={(e) => handleFileSelect(e, job.jobId)}
-                        />
-                        <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
-                          Submit Proposal
+                    {/* Add Proposal button and file input */}
+                    <div className="text-end mt-3">
+                      {!showInput[job.jobId] ? (
+                        <button className="btn btn-primary" onClick={() => handleShowInput(job.jobId)}>
+                          Add Proposal
                         </button>
-                      </>
-                    )}
+                      ) : (
+                        <>
+                          <input
+                            type="file"
+                            className="form-control-file mt-2"
+                            onChange={(e) => handleFileSelect(e, job.jobId)}
+                          />
+                          <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
+                            Submit Proposal
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                </li>
-              ))}
+                </div>
+              </li>
+            ))}
             </ul>
           </div>
         </div>
       </div>
     </div>
   );
-  
-  
 };
