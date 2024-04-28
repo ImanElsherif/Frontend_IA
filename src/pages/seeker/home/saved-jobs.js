@@ -131,7 +131,7 @@ const SavedJobsList = () => {
             <li key={job.jobId} className="list-group-item">
               <div className="row">
                 <div className="col-md-8">
-                  <h5>{job.jobName}</h5>
+                <h5><strong>Job Title: {job.jobTitle}</strong></h5>
                   <p><strong>Employer:</strong> {employerNames[job.employerId]}</p>
                   <p><strong>Location:</strong> {job.location}</p>
                   <p><strong>Budget:</strong> ${job.jobBudget}</p>

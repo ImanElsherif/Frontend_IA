@@ -8,12 +8,34 @@ export const JobList = () => {
     error: null,
   });
 
+  const [employerNames, setEmployerNames] = useState({});
+
   useEffect(() => {
     fetchJobs();
   }, []);
 
+  useEffect(() => {
+    const fetchEmployerNames = async () => {
+      const employers = {};
+      await Promise.all(jobs.data.map(async job => {
+        try {
+          const response = await axios.get(`http://localhost:5024/api/user/${job.employerId}`);
+          employers[job.employerId] = response.data.name;
+        } catch (error) {
+          console.error(`Failed to fetch employer info for job ${job.jobId}:`, error);
+          employers[job.employerId] = 'Unknown';
+        }
+      }));
+      setEmployerNames(employers);
+    };
+
+    if (!jobs.loading && jobs.data.length > 0) {
+      fetchEmployerNames();
+    }
+  }, [jobs]);
+
   const fetchJobs = () => {
-    axios.get('http://localhost:5024/api/jobs') // Adjust the API URL as necessary
+    axios.get('http://localhost:5024/api/jobs')
       .then(response => {
         setJobs({
           loading: false,
@@ -31,7 +53,6 @@ export const JobList = () => {
   };
 
   const updateJobStatus = (jobId, newStatus) => {
-    // Sending just a plain string as the request body
     axios.put(`http://localhost:5024/api/jobs/${jobId}/status`, JSON.stringify(newStatus), {
       headers: {
         'Content-Type': 'application/json'
@@ -39,7 +60,7 @@ export const JobList = () => {
     })
     .then(response => {
       console.log(`Status updated to ${newStatus}:`, response.data);
-      fetchJobs(); // Refresh the job list
+      fetchJobs();
     })
     .catch(error => {
       console.error(`Failed to update job status to ${newStatus}:`, error);
@@ -58,25 +79,35 @@ export const JobList = () => {
   return (
     <div className="container">
       <h1>Job List</h1>
-      <ul className="list-group">
-        {jobs.data.map(job => (
-          <li key={job.id} className="list-group-item d-flex justify-content-between align-items-center">
-            {job.jobTitle}
-            <div>
-              {job.status === 'Pending' && (
-                <>
-                  <button className="btn btn-success me-2" onClick={() => updateJobStatus(job.jobId, 'Accepted')}>
-                    Accept Job
-                  </button>
-                  <button className="btn btn-danger" onClick={() => updateJobStatus(job.jobId, 'Refused')}>
-                    Refuse Job
-                  </button>
-                </>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="job-list-container" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+        <ul className="list-group">
+          {jobs.data.map(job => (
+            <li key={job.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <div className="col-md-8">
+                <h5><strong>Job Title: {job.jobTitle}</strong></h5>
+                <p><strong>Employer:</strong> {employerNames[job.employerId]}</p>
+                <p><strong>Location:</strong> {job.location}</p>
+                <p><strong>Budget:</strong> ${job.jobBudget}</p>
+                <p><strong>Date Posted:</strong> {new Date(job.postCreationDate).toLocaleDateString()}</p>
+                <p><strong>Type:</strong> {job.jobType}</p>
+                <p><strong>Description:</strong> {job.jobDescription}</p>
+              </div>
+              <div>
+                {job.status === 'Pending' && (
+                  <>
+                    <button className="btn btn-success me-2" onClick={() => updateJobStatus(job.jobId, 'Accepted')}>
+                      Accept Job
+                    </button>
+                    <button className="btn btn-danger" onClick={() => updateJobStatus(job.jobId, 'Refused')}>
+                      Refuse Job
+                    </button>
+                  </>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
