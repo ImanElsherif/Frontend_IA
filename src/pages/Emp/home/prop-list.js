@@ -11,7 +11,7 @@ export const ProposalList = () => {
   const [updatedProposals, setUpdatedProposals] = useState([]);
   const currentEmployerId = localStorage.getItem('userId');
   const fetchProposals = () => {
-    axios.get(`http://localhost:5024/api/proposals/employer/${currentEmployerId}`) // Adjust the API URL as necessary
+    axios.get(`http://localhost:5024/api/proposals/employer/${currentEmployerId}`)
       .then(response => {
         setProposals({
           loading: false,
@@ -27,7 +27,6 @@ export const ProposalList = () => {
         });
       });
   };
-  
 
   useEffect(() => {
     fetchProposals();
@@ -41,7 +40,7 @@ export const ProposalList = () => {
     })
     .then(response => {
       console.log(`Status updated to ${newStatus}:`, response.data);
-      fetchProposals(); // Refresh the proposal list
+      fetchProposals();
     })
     .catch(error => {
       console.error(`Failed to update proposal status to ${newStatus}:`, error);
@@ -51,21 +50,21 @@ export const ProposalList = () => {
 
   const getJobName = async (jobId) => {
     try {
-      const response = await axios.get(`http://localhost:5024/api/jobs/${jobId}`); // Adjust the API URL as necessary
+      const response = await axios.get(`http://localhost:5024/api/jobs/${jobId}`);
       return response.data.jobTitle;
     } catch (error) {
       console.error(`Failed to fetch job name for ID ${jobId}:`, error);
-      return 'Unknown'; // Return a default name if fetching fails
+      return 'Unknown';
     }
   };
 
   const getJobSeekerName = async (jobSeekerId) => {
     try {
-      const response = await axios.get(`http://localhost:5024/api/user/${jobSeekerId}`); // Adjust the API URL as necessary
+      const response = await axios.get(`http://localhost:5024/api/user/${jobSeekerId}`);
       return response.data.name;
     } catch (error) {
       console.error(`Failed to fetch job seeker name for ID ${jobSeekerId}:`, error);
-      return 'Unknown'; // Return a default name if fetching fails
+      return 'Unknown';
     }
   };
 
@@ -99,6 +98,7 @@ export const ProposalList = () => {
             <th>Job Name</th>
             <th>Job Seeker Name</th>
             <th>Status</th>
+            <th>Attachment</th> {/* New column for attachment */}
             <th>Actions</th>
           </tr>
         </thead>
@@ -108,6 +108,11 @@ export const ProposalList = () => {
               <td>{proposal.jobName}</td>
               <td>{proposal.jobSeekerName}</td>
               <td>{proposal.status}</td>
+              <td>
+                {proposal.attachment && (
+                  <a href={proposal.attachment} target="_blank" rel="noopener noreferrer">View Attachment</a>
+                )}
+              </td>
               <td>
                 {proposal.status === 'Pending' && (
                   <>

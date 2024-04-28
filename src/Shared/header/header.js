@@ -64,7 +64,11 @@ export const AppHeader = () => {
                   Home
                 </Link>
               </li>
-          
+              <li className="nav-item">
+                <Link to={"/saved-jobs"} className="nav-link">
+                  Saved Jobs
+                </Link>
+              </li>
             </>
           )}
         </ul>

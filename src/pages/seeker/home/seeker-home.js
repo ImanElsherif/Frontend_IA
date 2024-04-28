@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import "./seeker-home.css";
+import '@fortawesome/fontawesome-free/css/all.css';
+
 
 export const JobList_seek = () => {
   const [files, setFiles] = useState({});
@@ -150,10 +152,33 @@ export const JobList_seek = () => {
       [name]: value
     }));
   };
+  const handleSaveJob = (jobId) => {
+    // Send a request to save the job for the current user
+    axios.post(`http://localhost:5024/api/SavedJobs`, {
+      jobId,
+      userId,
+    })
+    .then(() => {
+      const updatedJobsData = jobs.data.map(job => {
+        if (job.jobId === jobId) {
+          return { ...job, isSaved: true }; // Set isSaved flag to true
+        }
+        return job;
+      });
+      setJobs(prevJobs => ({ ...prevJobs, data: updatedJobsData }));
+      alert('Job saved successfully!');
+    })
+    .catch(error => {
+      console.error('Failed to save job:', error);
+      alert('Failed to save job. Please try again.');
+    });
+  };
 
   return (
+    
     <div className="container">
-      <h1>Job List</h1>
+      
+
       <div className="search-container">
         <div className="search-field">
           <label>Title:</label>
@@ -180,33 +205,58 @@ export const JobList_seek = () => {
           <input type="number" name="maxBudget" value={searchCriteria.maxBudget} onChange={handleInputChange} />
         </div>
       </div>
-      <div className="job-list-container">
-        <ul className="list-group">
-          {filteredJobs.map(job => (
-            <li key={job.jobId} className="list-group-item">
-              <div className="d-flex flex-column align-items-start">
-                <strong>{job.jobName}</strong>
-                {!showInput[job.jobId] ? (
-                  <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
-                    Add Proposal
-                  </button>
-                ) : (
-                  <>
-                    <input
-                      type="file"
-                      className="form-control-file mt-2"
-                      onChange={(e) => handleFileSelect(e, job.jobId)}
-                    />
-                    <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
-                      Submit Proposal
-                    </button>
-                  </>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <div className="container">
+ 
+  <div className="container">
+  <h1>Job List</h1>
+  <div className="search-container">
+    {/* Search fields */}
+  </div>
+  <div className="job-list-container">
+    <ul className="list-group">
+      {filteredJobs.map(job => (
+        <li key={job.jobId} className="list-group-item">
+          <div className="d-flex flex-row align-items-center justify-content-between">
+            <div>
+              <strong>{job.jobName}</strong>
+            </div>
+            {/* Save Job button */}
+            <div>
+              <button 
+                className={`btn btn-sm ${job.isSaved ? 'btn-success' : 'btn-outline-secondary'} ms-2`} 
+                onClick={() => handleSaveJob(job.jobId)}
+              >
+                <i className="fas fa-heart"></i>
+              </button>
+            </div>
+          </div>
+          {/* Add Proposal button and file input */}
+          <div>
+            {!showInput[job.jobId] ? (
+              <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
+                Add Proposal
+              </button>
+            ) : (
+              <>
+                <input
+                  type="file"
+                  className="form-control-file mt-2"
+                  onChange={(e) => handleFileSelect(e, job.jobId)}
+                />
+                <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
+                  Submit Proposal
+                </button>
+              </>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+</div>
+
     </div>
   );
 };
