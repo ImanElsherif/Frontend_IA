@@ -110,7 +110,10 @@ export const ProposalList = () => {
               <td>{proposal.status}</td>
               <td>
                 {proposal.attachment && (
-                  <a href={proposal.attachment} target="_blank" rel="noopener noreferrer">View Attachment</a>
+                <a href={`http://localhost:5024/api/proposals/attachment/${proposal.proposalId}`} target="_blank" rel="noopener noreferrer">View Attachment</a>
+
+
+
                 )}
               </td>
               <td>
