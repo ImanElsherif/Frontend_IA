@@ -175,88 +175,89 @@ export const JobList_seek = () => {
   };
 
   return (
-    
     <div className="container">
-      
-
-      <div className="search-container">
-        <div className="search-field">
-          <label>Title:</label>
-          <input type="text" name="title" value={searchCriteria.title} onChange={handleInputChange} />
+      <div className="row">
+        {/* Search Form */}
+        <div className="col-md-3">
+          
+          <form className="search-container">
+            <div className="row g-3">
+              <div className="col-12">
+                <label htmlFor="title" className="form-label">Job Title</label>
+                <input type="text" id="title" name="title" className="form-control" placeholder="Enter job title" value={searchCriteria.title} onChange={handleInputChange} />
+              </div>
+              <div className="col-12">
+                <label htmlFor="location" className="form-label">Location</label>
+                <input type="text" id="location" name="location" className="form-control" placeholder="Enter location" value={searchCriteria.location} onChange={handleInputChange} />
+              </div>
+              <div className="col-12">
+                <label htmlFor="minDate" className="form-label">Min Date</label>
+                <input type="date" id="minDate" name="minDate" className="form-control" value={searchCriteria.minDate} onChange={handleInputChange} />
+              </div>
+              <div className="col-12">
+                <label htmlFor="maxDate" className="form-label">Max Date</label>
+                <input type="date" id="maxDate" name="maxDate" className="form-control" value={searchCriteria.maxDate} onChange={handleInputChange} />
+              </div>
+              <div className="col-12">
+                <label htmlFor="minBudget" className="form-label">Min Budget ($)</label>
+                <input type="number" id="minBudget" name="minBudget" className="form-control" placeholder="Min budget" value={searchCriteria.minBudget} onChange={handleInputChange} />
+              </div>
+              <div className="col-12">
+                <label htmlFor="maxBudget" className="form-label">Max Budget ($)</label>
+                <input type="number" id="maxBudget" name="maxBudget" className="form-control" placeholder="Max budget" value={searchCriteria.maxBudget} onChange={handleInputChange} />
+              </div>
+            </div>
+          </form>
         </div>
-        <div className="search-field">
-          <label>Location:</label>
-          <input type="text" name="location" value={searchCriteria.location} onChange={handleInputChange} />
-        </div>
-        <div className="search-field">
-          <label>Min Date:</label>
-          <input type="date" name="minDate" value={searchCriteria.minDate} onChange={handleInputChange} />
-        </div>
-        <div className="search-field">
-          <label>Max Date:</label>
-          <input type="date" name="maxDate" value={searchCriteria.maxDate} onChange={handleInputChange} />
-        </div>
-        <div className="search-field">
-          <label>Min Budget:</label>
-          <input type="number" name="minBudget" value={searchCriteria.minBudget} onChange={handleInputChange} />
-        </div>
-        <div className="search-field">
-          <label>Max Budget:</label>
-          <input type="number" name="maxBudget" value={searchCriteria.maxBudget} onChange={handleInputChange} />
+  
+        {/* Job List */}
+        <div className="col-md-9">
+          <div className="job-list-container mt-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+            <h1>Job List</h1>
+            <ul className="list-group">
+              {filteredJobs.map(job => (
+                <li key={job.jobId} className="list-group-item">
+                  <div className="d-flex flex-row align-items-center justify-content-between">
+                    <div>
+                      <strong>{job.jobName}</strong>
+                    </div>
+                    {/* Save Job button */}
+                    <div>
+                      <button
+                        className={`btn btn-sm ${job.isSaved ? 'btn-success' : 'btn-outline-secondary'} ms-2`}
+                        onClick={() => handleSaveJob(job.jobId)}
+                      >
+                        <i className="fas fa-heart"></i>
+                      </button>
+                    </div>
+                  </div>
+                  {/* Add Proposal button and file input */}
+                  <div>
+                    {!showInput[job.jobId] ? (
+                      <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
+                        Add Proposal
+                      </button>
+                    ) : (
+                      <>
+                        <input
+                          type="file"
+                          className="form-control-file mt-2"
+                          onChange={(e) => handleFileSelect(e, job.jobId)}
+                        />
+                        <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
+                          Submit Proposal
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
-      <div className="container">
- 
-  <div className="container">
-  <h1>Job List</h1>
-  <div className="search-container">
-    {/* Search fields */}
-  </div>
-  <div className="job-list-container">
-    <ul className="list-group">
-      {filteredJobs.map(job => (
-        <li key={job.jobId} className="list-group-item">
-          <div className="d-flex flex-row align-items-center justify-content-between">
-            <div>
-              <strong>{job.jobName}</strong>
-            </div>
-            {/* Save Job button */}
-            <div>
-              <button 
-                className={`btn btn-sm ${job.isSaved ? 'btn-success' : 'btn-outline-secondary'} ms-2`} 
-                onClick={() => handleSaveJob(job.jobId)}
-              >
-                <i className="fas fa-heart"></i>
-              </button>
-            </div>
-          </div>
-          {/* Add Proposal button and file input */}
-          <div>
-            {!showInput[job.jobId] ? (
-              <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
-                Add Proposal
-              </button>
-            ) : (
-              <>
-                <input
-                  type="file"
-                  className="form-control-file mt-2"
-                  onChange={(e) => handleFileSelect(e, job.jobId)}
-                />
-                <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
-                  Submit Proposal
-                </button>
-              </>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
-
-</div>
-
     </div>
   );
+  
+  
 };
