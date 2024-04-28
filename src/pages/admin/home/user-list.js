@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export const UserList = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [users, setUsers] = useState({
     loading: true,
     data: [],
@@ -11,7 +11,7 @@ const navigate = useNavigate();
   });
 
   useEffect(() => {
-    axios.get('http://localhost:5024/api/user/employers') // Adjust the API URL as necessary
+    axios.get('http://localhost:5024/api/user/employers')
       .then(response => {
         setUsers({
           loading: false,
@@ -35,11 +35,10 @@ const navigate = useNavigate();
   if (users.error) {
     return <div>Error: {users.error}</div>;
   }
+
   const deleteUser = (userId) => {
     axios.delete(`http://localhost:5024/api/user/${userId}`)
       .then(response => {
-        // Successfully deleted the user
-        // Filter out the deleted user from the list
         setUsers(prevState => ({
           ...prevState,
           data: prevState.data.filter(user => user.id !== userId)
@@ -47,20 +46,25 @@ const navigate = useNavigate();
       })
       .catch(error => {
         console.error('Failed to delete user:', error);
-        // Optionally handle errors, e.g., show an error message
       });
   };
+
   const handleUpdate = (userId) => {
-    // Navigate to an update page
     navigate(`/update-user/${userId}`);
   };
+
   return (
     <div className="container">
       <h1>User List</h1>
-      <div className="list-group">
+      <div className="list-group" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
         {users.data.map(user => (
           <div key={user.id} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            {user.email}
+            <div className="col-md-8">
+              <p><strong>Company Name:</strong> {user.name}</p>
+              <p><strong>Company Email:</strong> {user.email}</p>
+              <p><strong>Company Description:</strong> {user.companyDescription}</p>
+              <p><strong>Contact Info:</strong> {user.contactInfo}</p>
+            </div>
             <div>
               <button className="btn btn-warning me-2" onClick={() => handleUpdate(user.id)}>Update</button>
               <button className="btn btn-danger" onClick={() => deleteUser(user.id)}>Delete</button>
@@ -70,5 +74,4 @@ const navigate = useNavigate();
       </div>
     </div>
   );
-  
 };
