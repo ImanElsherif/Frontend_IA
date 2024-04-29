@@ -10,7 +10,9 @@ import UpdateUserComponent from "./pages/admin/home/update-user";
 import { AddJob } from "./pages/Emp/home/emp-home";
 import { JobList_seek } from "./pages/seeker/home/seeker-home";
 import SavedJobsList from "./pages/seeker/home/saved-jobs"; 
+import JobSeekerInfo from "./pages/seeker/home/seek-info"; 
 import { Home } from "./pages/home/home";
+
 
 export const routes = createBrowserRouter([
   {
@@ -47,8 +49,8 @@ export const routes = createBrowserRouter([
       // Seeker Routes
       {path: "/seeker-home",element: <JobList_seek />,},
       {path: "/saved-jobs",element: <SavedJobsList />,},
+      {path: "/seeker-info",element: <JobSeekerInfo />,},
       
-
       {path: "*",element: <Navigate to={"/"} />,},
     ],
   },

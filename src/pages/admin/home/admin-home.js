@@ -66,16 +66,23 @@ export const AdminHome = () => {
 
     setRegister({ ...register, loading: true, err: [], successMsg: "" });
 
+    const formData = {
+      Name: form.current.name.value,
+      Email: email,
+      Password: password,
+      UserTypeId: "5",
+      CompanyDescription: companyDescription,
+      ContactInfo: contactInfo,
+    };
+
     try {
       const response = await axios.post(
         "http://localhost:5024/api/auth/register",
+        formData,
         {
-          Name: form.current.name.value,
-          Email: email,
-          Password: password,
-          UserTypeId: "5",
-          CompanyDescription: companyDescription,
-          ContactInfo: contactInfo,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
@@ -177,6 +184,7 @@ export const AdminHome = () => {
                       type="email"
                       id="email"
                       ref={(val) => form.current.email = val}
+                      required
                     />
                   </div>
                   <div className="mb-3">
@@ -186,6 +194,7 @@ export const AdminHome = () => {
                       type="password"
                       id="password"
                       ref={(val) => form.current.password = val}
+                      required
                     />
                   </div>
                   <div className="mb-3">

@@ -59,9 +59,14 @@ export const AppHeader = () => {
             <li className="navbar-brand">
             Job seeker
             </li>
+            <li className="nav-item">
+                <Link to={"/seeker-info"} className="nav-link">
+                  Profile
+                </Link>
+              </li>
               <li className="nav-item">
                 <Link to={"/seeker-home"} className="nav-link">
-                  Home
+                  Jobs
                 </Link>
               </li>
               <li className="nav-item">
@@ -69,6 +74,7 @@ export const AppHeader = () => {
                   Saved Jobs
                 </Link>
               </li>
+             
             </>
           )}
         </ul>

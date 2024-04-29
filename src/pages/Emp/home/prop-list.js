@@ -63,12 +63,13 @@ export const ProposalList = () => {
   const getJobSeekerName = async (jobSeekerId) => {
     try {
       const response = await axios.get(`http://localhost:5024/api/user/${jobSeekerId}`);
-      return response.data;
+      return response.data.name; // Assuming the response contains the job seeker's name
     } catch (error) {
       console.error(`Failed to fetch job seeker name for ID ${jobSeekerId}:`, error);
-      return null;
+      return 'Unknown';
     }
   };
+
   const getJobSeekerDetails = async (jobSeekerId) => {
     try {
       const response = await axios.get(`http://localhost:5024/api/user/seeker/${jobSeekerId}`);
@@ -128,7 +129,7 @@ export const ProposalList = () => {
               <td>{proposal.jobName}</td>
               <td>
                 <button className="btn btn-link" onClick={() => handleJobSeekerClick(proposal.jobSeeker)}>
-                  {proposal.jobSeeker.name}
+                  {proposal.jobSeeker ? proposal.jobSeeker.name : 'Unknown'}
                 </button>
               </td>
               <td>{proposal.status}</td>
@@ -153,37 +154,40 @@ export const ProposalList = () => {
           ))}
         </tbody>
       </table>
-
+  
       {/* Modal to display job seeker information */}
       {selectedJobSeeker && (
-  <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-    <div className="modal-dialog" role="document">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">{selectedJobSeeker.name}</h5>
-          <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={closeModal}>
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header" style={{ display: 'flex', alignItems: 'center' }}>
+                {selectedJobSeeker.profilePic ? (
+                  <img 
+                    src={`data:image/jpeg;base64,${selectedJobSeeker.profilePic}`} 
+                    alt="Profile" 
+                    onError={(e) => console.error("Error loading image:", e)}
+                    style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  'N/A'
+                )}
+                <h5 className="modal-title" style={{ marginLeft: '10px' }}>{selectedJobSeeker.name}</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={closeModal}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <p>Email: {selectedJobSeeker.email}</p>
+                <p>Age: {selectedJobSeeker.age || 'N/A'}</p>
+                <p>Skills: {selectedJobSeeker.skills || 'N/A'}</p>
+                <p>Description Bio: {selectedJobSeeker.descriptionBio || 'N/A'}</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="modal-body">
-          <p>Email: {selectedJobSeeker.email}</p>
-          <p>Age: {selectedJobSeeker.age || 'N/A'}</p>
-          <p>Skills: {selectedJobSeeker.skills || 'N/A'}</p>
-          <p>Description Bio: {selectedJobSeeker.descriptionBio || 'N/A'}</p>
-          <p>Profile Pic: 
-            {selectedJobSeeker.profilePic ? (
-              <img src={selectedJobSeeker.profilePic} alt="Profile" onError={(e) => console.error("Error loading image:", e)} />
-            ) : (
-              'N/A'
-            )}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+      )}
+  
     </div>
   );
+  
 };

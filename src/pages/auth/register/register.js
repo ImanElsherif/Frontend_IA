@@ -160,6 +160,7 @@ export const Register = () => {
                         type="text"
                         id="name"
                         ref={(val) => (form.current.name = val)}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -171,6 +172,7 @@ export const Register = () => {
                         type="email"
                         id="email"
                         ref={(val) => (form.current.email = val)}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -182,6 +184,7 @@ export const Register = () => {
                         type="password"
                         id="password"
                         ref={(val) => (form.current.password = val)}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -193,6 +196,7 @@ export const Register = () => {
                         type="text"
                         id="skills"
                         ref={(val) => (form.current.skills = val)}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -207,6 +211,7 @@ export const Register = () => {
     onChange={(e) => {
       form.current.profile_pic = e.target.files[0];
     }}
+    required
   />
 </div>
 
@@ -218,7 +223,7 @@ export const Register = () => {
                         className="form-control"
                         type="number"
                         id="age"
-                        ref={(val) => (form.current.age = val)}
+                        ref={(val) => (form.current.age = val)} required min="18"
                       />
                     </div>
                     <div className="mb-3">
@@ -231,7 +236,7 @@ export const Register = () => {
                       <textarea
                         className="form-control"
                         id="description_bio"
-                        ref={(val) => (form.current.description_bio = val)}
+                        ref={(val) => (form.current.description_bio = val)} required
                       ></textarea>
                     </div>
                     <button className="btn btn-primary" type="submit">
