@@ -25,10 +25,10 @@ export const Register = () => {
 
   const submit = async (e) => {
     e.preventDefault();
-
+  
     const email = form.current.email.value;
     const password = form.current.password.value;
-
+  
     if (password.length < 6) {
       setRegister({
         ...register,
@@ -37,24 +37,30 @@ export const Register = () => {
       });
       return;
     }
-
+  
     setRegister({ ...register, loading: true, err: [], successMsg: "" }); // Clear errors and success message before submitting
-
+  
+    const formData = new FormData();
+    formData.append("Name", form.current.name.value);
+    formData.append("Email", email);
+    formData.append("Password", password);
+    formData.append("UserTypeId", 2);
+    formData.append("Skills", form.current.skills.value);
+    formData.append("Age", form.current.age.value);
+    formData.append("DescriptionBio", form.current.description_bio.value);
+    formData.append("ProfilePic", form.current.profile_pic);
+  
     try {
       const response = await axios.post(
         "http://localhost:5024/api/auth/register",
+        formData,
         {
-          Name: form.current.name.value,
-          Email: email,
-          Password: password,
-          UserTypeId: 2,
-          Skills: form.current.skills.value,
-          ProfilePic: form.current.profile_pic.value,
-          Age: form.current.age.value,
-          DescriptionBio: form.current.description_bio.value,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-
+  
       setRegister({
         ...register,
         loading: false,
@@ -83,6 +89,7 @@ export const Register = () => {
       }
     }
   };
+  
 
   useEffect(() => {
     setRegister({ ...register, loading: false });
@@ -152,7 +159,7 @@ export const Register = () => {
                         className="form-control"
                         type="text"
                         id="name"
-                        ref={(val) => (form.current.name = val)} required
+                        ref={(val) => (form.current.name = val)}
                       />
                     </div>
                     <div className="mb-3">
@@ -164,7 +171,7 @@ export const Register = () => {
                         type="email"
                         id="email"
                         ref={(val) => (form.current.email = val)}
-                        required />
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="password">
@@ -175,7 +182,7 @@ export const Register = () => {
                         type="password"
                         id="password"
                         ref={(val) => (form.current.password = val)}
-                        required />
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="skills">
@@ -186,19 +193,23 @@ export const Register = () => {
                         type="text"
                         id="skills"
                         ref={(val) => (form.current.skills = val)}
-                        required  />
+                      />
                     </div>
                     <div className="mb-3">
-                      <label className="small mb-1" htmlFor="profile_pic">
-                        Profile Picture URL
-                      </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="profile_pic"
-                        ref={(val) => (form.current.profile_pic = val)}
-                        required />
-                    </div>
+  <label className="small mb-1" htmlFor="profile_pic">
+    Profile Picture
+  </label>
+  <input
+    className="form-control"
+    type="file"
+    id="profile_pic"
+    accept="image/*"
+    onChange={(e) => {
+      form.current.profile_pic = e.target.files[0];
+    }}
+  />
+</div>
+
                     <div className="mb-3">
                       <label className="small mb-1" htmlFor="age">
                         Age
@@ -208,7 +219,7 @@ export const Register = () => {
                         type="number"
                         id="age"
                         ref={(val) => (form.current.age = val)}
-                        required min="18" />
+                      />
                     </div>
                     <div className="mb-3">
                       <label
@@ -220,7 +231,7 @@ export const Register = () => {
                       <textarea
                         className="form-control"
                         id="description_bio"
-                        ref={(val) => (form.current.description_bio = val)} required
+                        ref={(val) => (form.current.description_bio = val)}
                       ></textarea>
                     </div>
                     <button className="btn btn-primary" type="submit">
