@@ -35,34 +35,34 @@ const SavedJobsList = () => {
         axios.get(`http://localhost:5024/api/savedjobs/${userId}`),
         axios.get(`http://localhost:5024/api/jobs`)
       ]);
-
+  
       const savedJobsData = savedJobsResponse.data;
       const allJobsData = jobsResponse.data;
-
+  
       const jobsWithTitles = savedJobsData.map(savedJob => {
         const job = allJobsData.find(job => job.jobId === savedJob.jobId);
         if (job) {
-          return { ...job, jobTitle: job.jobTitle };
+          return { ...job, jobTitle: job.jobTitle, savedJobId: savedJob.savedJobId }; // Add savedJobId here
         }
         return null;
       }).filter(Boolean);
-
+  
       setSavedJobs(savedJobsData);
       setJobs({
         loading: false,
         data: jobsWithTitles,
         error: null,
       });
-
+  
       const employers = {};
       const statuses = {};
       await Promise.all(jobsWithTitles.map(async job => {
         try {
           const response = await axios.get(`http://localhost:5024/api/user/${job.employerId}`);
           employers[job.employerId] = response.data.name;
-
+  
           fetchUserProposals(job.jobId);
-
+  
         } catch (error) {
           console.error(`Failed to fetch employer info for job ${job.jobId}:`, error);
         }
@@ -77,7 +77,7 @@ const SavedJobsList = () => {
       });
     }
   };
-
+  
   const fetchUserProposals = async (jobId) => {
     try {
       const userProposalsResponse = await axios.get(`http://localhost:5024/api/proposals/job/${jobId}/user/${userId}`);
@@ -139,6 +139,20 @@ const SavedJobsList = () => {
     });
   };
 
+  const deleteSavedJob = (savedJobId) => {
+    axios.delete(`http://localhost:5024/api/savedjobs/${savedJobId}`)
+      .then(() => {
+        setMessage({ text: "Job deleted successfully!", type: 'success' });
+        // Filter out the deleted job from the jobs state
+        const updatedJobs = jobs.data.filter(job => job.savedJobId !== savedJobId);
+        setJobs(prevJobs => ({ ...prevJobs, data: updatedJobs }));
+      })
+      .catch(error => {
+        console.error('Failed to delete the saved job:', error);
+        setMessage({ text: "Failed to delete job. Please try again.", type: 'error' });
+      });
+  };
+
   return (
     <div className="container">
       <h1>Saved Jobs</h1>
@@ -172,7 +186,14 @@ const SavedJobsList = () => {
                     )}
                   </div>
                 </div>
+                
                 <div className="col-md-4">
+                <button
+  className={`btn btn-sm btn-outline-secondary ms-2`}
+  onClick={() => deleteSavedJob(job.savedJobId)} // Use the deleteSavedJob function
+>
+  <i className="fas fa-trash"></i> Unsave
+</button> 
                   {!showInput[job.jobId] && proposalStatus[job.jobId] === 'No Proposal' && (
                     <div className="text-end">
                       <button className="btn btn-primary mt-2" onClick={() => handleShowInput(job.jobId)}>
@@ -180,12 +201,14 @@ const SavedJobsList = () => {
                       </button>
                     </div>
                   )}
+                
                   {showInput[job.jobId] && (
                     <div className="text-end mt-2">
                       <input type="file" onChange={(event) => handleFileSelect(event, job.jobId)} />
                       <button className="btn btn-success mt-2" onClick={() => handleAddProposal(job.jobId)}>
                         Submit Proposal
                       </button>
+                      
                     </div>
                   )}
                 </div>
