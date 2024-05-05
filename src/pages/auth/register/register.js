@@ -44,7 +44,7 @@ export const Register = () => {
     formData.append("Name", form.current.name.value);
     formData.append("Email", email);
     formData.append("Password", password);
-    formData.append("UserTypeId", 2);
+    formData.append("UserTypeId", 3);
     formData.append("Skills", form.current.skills.value);
     formData.append("Age", form.current.age.value);
     formData.append("DescriptionBio", form.current.description_bio.value);
@@ -52,7 +52,7 @@ export const Register = () => {
   
     try {
       const response = await axios.post(
-        "http://localhost:5024/api/auth/register",
+        "http://localhost:5024/api/auth/register-jobseeker",
         formData,
         {
           headers: {

@@ -16,7 +16,6 @@ export const AdminHome = () => {
     email: "",
     password: "",
     name: "",
-    company_name: "",
     company_description: "",
     contact_info: "",
   });
@@ -67,17 +66,17 @@ export const AdminHome = () => {
     setRegister({ ...register, loading: true, err: [], successMsg: "" });
 
     const formData = {
-      Name: form.current.name.value,
+      CompanyName: form.current.name.value,
       Email: email,
       Password: password,
-      UserTypeId: "5",
+      UserTypeId: "2",
       CompanyDescription: companyDescription,
       ContactInfo: contactInfo,
     };
-
+console.log(formData)
     try {
       const response = await axios.post(
-        "http://localhost:5024/api/auth/register",
+        "http://localhost:5024/api/auth/register-employer",
         formData,
         {
           headers: {

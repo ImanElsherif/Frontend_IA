@@ -8,7 +8,7 @@ const JobSeekerInfo = () => {
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
-console.log(userId)
+console.log("id",userId)
     const fetchJobSeeker = async () => {
       try {
         const response = await axios.get(`http://localhost:5024/api/user/seeker/${userId}`);

@@ -63,6 +63,7 @@ export const Login = () => {
   const handleLoginSuccess = (data) => {
     setLogin({ ...login, loading: false });
     const user = jwt(data.data.token);
+    console.log("user",user)
     localStorage.setItem("token", data.token); // Store token
     localStorage.setItem("userId", user.nameid);
     setAuthToken(data.data.token);

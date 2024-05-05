@@ -37,7 +37,7 @@ export const UserList = () => {
   }
 
   const deleteUser = (userId) => {
-    axios.delete(`http://localhost:5024/api/user/${userId}`)
+    axios.delete(`http://localhost:5024/api/user/employer/${userId}`)
       .then(response => {
         setUsers(prevState => ({
           ...prevState,
@@ -60,10 +60,11 @@ export const UserList = () => {
         {users.data.map(user => (
           <div key={user.id} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
             <div className="col-md-8">
-              <p><strong>Company Name:</strong> {user.name}</p>
+              <p><strong>Company Name:</strong> {user.companyName}</p>
               <p><strong>Company Email:</strong> {user.email}</p>
               <p><strong>Company Description:</strong> {user.companyDescription}</p>
               <p><strong>Contact Info:</strong> {user.contactInfo}</p>
+              
             </div>
             <div>
               <button className="btn btn-warning me-2" onClick={() => handleUpdate(user.id)}>Update</button>

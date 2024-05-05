@@ -7,7 +7,7 @@ const UpdateUserComponent = () => {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState({
-    name: '',
+    companyName: '',
     email: '',
     password: '',
     companyDescription: '', // Add companyDescription field to userData state
@@ -19,10 +19,10 @@ const UpdateUserComponent = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:5024/api/user/${userId}`)
+    axios.get(`http://localhost:5024/api/user/employer/${userId}`)
       .then(response => {
-        const { name, email, companyDescription, contactInfo } = response.data;
-        setUserData({ name, email, companyDescription, contactInfo });
+        const { companyName, email, companyDescription, contactInfo } = response.data;
+        setUserData({ companyName, email, companyDescription, contactInfo });
         setLoading(false);
       })
       .catch(error => {
@@ -30,6 +30,7 @@ const UpdateUserComponent = () => {
         setLoading(false);
       });
   }, [userId]);
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -49,6 +50,7 @@ const UpdateUserComponent = () => {
     }
   };
 
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -65,9 +67,9 @@ const UpdateUserComponent = () => {
                   <input
                     type="text"
                     className="form-control"
-                    id="name"
-                    name="name"
-                    value={userData.name}
+                    id="companyName"
+                    name="companyName"
+                    value={userData.companyName}
                     onChange={handleInputChange}
                   />
                 </div>

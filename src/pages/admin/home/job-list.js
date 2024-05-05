@@ -19,8 +19,8 @@ export const JobList = () => {
       const employers = {};
       await Promise.all(jobs.data.map(async job => {
         try {
-          const response = await axios.get(`http://localhost:5024/api/user/${job.employerId}`);
-          employers[job.employerId] = response.data.name;
+          const response = await axios.get(`http://localhost:5024/api/user/employer/${job.employerId}`);
+          employers[job.employerId] = response.data.companyName;
         } catch (error) {
           console.error(`Failed to fetch employer info for job ${job.jobId}:`, error);
           employers[job.employerId] = 'Unknown';
