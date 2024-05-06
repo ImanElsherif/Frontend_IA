@@ -58,7 +58,7 @@ const SavedJobsList = () => {
       const statuses = {};
       await Promise.all(jobsWithTitles.map(async job => {
         try {
-          const response = await axios.get(`http://localhost:5024/api/user/${job.employerId}`);
+          const response = await axios.get(`http://localhost:5024/api/user/employer/${job.employerId}`);
           employers[job.employerId] = response.data.name;
   
           fetchUserProposals(job.jobId);
@@ -88,6 +88,7 @@ const SavedJobsList = () => {
       setProposalStatus(prevStatuses => ({ ...prevStatuses, [jobId]: 'No Proposal' }));
     }
   };
+
 
   const handleShowInput = (jobId) => {
     setShowInput(prev => ({
