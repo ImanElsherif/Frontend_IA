@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { getAuthToken } from "../../../services/auth";
+
 
 export const AddJob = () => {
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ export const AddJob = () => {
 
   const submit = (e) => {
     e.preventDefault();
+   
      // Create a new Date object and adjust it to your desired timezone if needed
   let date = new Date();
   let localTime = date.getTime();
@@ -47,8 +50,16 @@ export const AddJob = () => {
     console.log("Sending Request with payload:", payload);
 
     setJobState({ ...jobState, loading: true });
-
-    axios.post("http://localhost:5024/api/jobs", payload)
+    const { token, user } = getAuthToken();
+    axios.post("http://localhost:5024/api/jobs", 
+    payload,
+    {
+      headers: {
+        
+        Authorization: `Bearer ${token}`,
+        
+      },
+    })
   .then((response) => {
     console.log("Response:", response.data);
     setJobState(prevState => ({

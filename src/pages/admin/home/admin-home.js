@@ -2,6 +2,8 @@ import "./admin-home.css";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getAuthToken } from "../../../services/auth";
+
 
 export const AdminHome = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ export const AdminHome = () => {
   });
 
   const submit = async (e) => {
+    const { token, user } = getAuthToken();
     e.preventDefault();
 
     const email = form.current.email.value;
@@ -81,6 +84,8 @@ console.log(formData)
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+            
           },
         }
       );

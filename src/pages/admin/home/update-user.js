@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getAuthToken } from "../../../services/auth";
+
 
 const UpdateUserComponent = () => {
   const { userId } = useParams();
@@ -19,7 +21,12 @@ const UpdateUserComponent = () => {
 
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:5024/api/user/employer/${userId}`)
+    const { token, user } = getAuthToken();
+    axios.get(`http://localhost:5024/api/user/employer/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         const { companyName, email, companyDescription, contactInfo } = response.data;
         setUserData({ companyName, email, companyDescription, contactInfo });
@@ -42,8 +49,13 @@ const UpdateUserComponent = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    const { token, user } = getAuthToken();
     try {
-      await axios.put(`http://localhost:5024/api/user/${userId}`, userData);
+      await axios.put(`http://localhost:5024/api/user/${userId}`, userData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       navigate('/user-list');
     } catch (error) {
       setError(error.message);

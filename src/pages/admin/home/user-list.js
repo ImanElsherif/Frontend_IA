@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { getAuthToken } from "../../../services/auth";
-const { token, user } = getAuthToken();
 
 export const UserList = () => {
   const navigate = useNavigate();
@@ -13,25 +12,32 @@ export const UserList = () => {
   });
 
   useEffect(() => {
-    axios.get('http://localhost:5024/api/user/employers', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(response => {
+    const fetchData = async () => {
+      const { token, user } = getAuthToken();
+      try {
+        const response = await axios.get('http://localhost:5024/api/user/employers', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUsers({
           loading: false,
           data: response.data,
           error: null,
         });
-      })
-      .catch(error => {
+      } catch (error) {
+        console.error('Failed to fetch user list:', error);
+        // Retry fetching data after a short delay (e.g., 3 seconds)
+      
         setUsers({
+          ...users,
           loading: false,
-          data: [],
-          error: error.message,
+          error: 'Failed to fetch user list. ',
         });
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (users.loading) {
@@ -43,7 +49,12 @@ export const UserList = () => {
   }
 
   const deleteUser = (userId) => {
-    axios.delete(`http://localhost:5024/api/user/employer/${userId}`)
+    const { token, user } = getAuthToken();
+    axios.delete(`http://localhost:5024/api/user/employer/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         setUsers(prevState => ({
           ...prevState,

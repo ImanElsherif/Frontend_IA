@@ -6,6 +6,6 @@ export const AuthGuard = ({ roles }) => {
   if (!token) {
     return <> {roles.length == 0 ? <Outlet /> : <Navigate to={"/login"} />} </>;
   } else {
-    return <> {roles.find((role) => user.role.includes(role)) ? <Outlet /> : <Navigate to={`${user.role.toLowerCase()}-home`} />} </>;
+    return <> {roles.find((role) => user.role.includes(role)) ? <Outlet /> : <Navigate to={`${user.role.toLowerCase()}--home`} />} </>;
   }
 };
