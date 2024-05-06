@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getAuthToken } from "../../../services/auth";
+const { token, user } = getAuthToken();
 
 export const UserList = () => {
   const navigate = useNavigate();
@@ -11,7 +13,11 @@ export const UserList = () => {
   });
 
   useEffect(() => {
-    axios.get('http://localhost:5024/api/user/employers')
+    axios.get('http://localhost:5024/api/user/employers', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         setUsers({
           loading: false,
