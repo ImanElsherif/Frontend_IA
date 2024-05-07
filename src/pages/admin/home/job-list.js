@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getAuthToken } from "../../../services/auth";
 
 export const JobList = () => {
   const [jobs, setJobs] = useState({
@@ -35,7 +36,12 @@ export const JobList = () => {
   }, [jobs]);
 
   const fetchJobs = () => {
-    axios.get('http://localhost:5024/api/jobs')
+    const { token, user } = getAuthToken();
+    axios.get('http://localhost:5024/api/jobs', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(response => {
         setJobs({
           loading: false,
@@ -51,6 +57,7 @@ export const JobList = () => {
         });
       });
   };
+  
 
   const updateJobStatus = (jobId, newStatus) => {
     axios.put(`http://localhost:5024/api/jobs/${jobId}/status`, JSON.stringify(newStatus), {
