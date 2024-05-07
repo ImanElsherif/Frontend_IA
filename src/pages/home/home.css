@@ -1,0 +1,104 @@
+/* home.css */
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header Styles */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  .nav-links a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  /* Hero Section Styles */
+  .hero {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .hero-heading {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+  
+  .hero-description {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .hero-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  
+  .hero-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Image Section Styles */
+  .image-section {
+    width: 100%;
+    margin-bottom: 40px;
+  }
+  
+  /* Section Heading Styles */
+  .section-heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  /* About Section Styles */
+  .about-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .about-button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  
+  .about-button:hover {
+    background-color: #218838;
+  }
+  
+  /* Footer Styles */
+  .footer {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+  }
+  
+  .footer p {
+    font-size: 14px;
+    color: #666;
+  }
+  

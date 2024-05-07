@@ -35,29 +35,29 @@ export const JobList = () => {
     }
   }, [jobs]);
 
-  const fetchJobs = () => {
-    const { token, user } = getAuthToken();
-    axios.get('http://localhost:5024/api/jobs', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(response => {
-        setJobs({
-          loading: false,
-          data: response.data,
-          error: null,
-        });
-      })
-      .catch(error => {
-        setJobs({
-          loading: false,
-          data: [],
-          error: error.message,
-        });
+ const fetchJobs = () => {
+  const { token, user } = getAuthToken();
+  axios.get('http://localhost:5024/api/jobs', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(response => {
+      setJobs({
+        loading: false,
+        data: response.data,
+        error: null,
       });
-  };
-  
+    })
+    .catch(error => {
+      setJobs({
+        loading: false,
+        data: [],
+        error: error.message,
+      });
+    });
+};
+
 
   const updateJobStatus = (jobId, newStatus) => {
     axios.put(`http://localhost:5024/api/jobs/${jobId}/status`, JSON.stringify(newStatus), {

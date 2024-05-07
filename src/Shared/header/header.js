@@ -23,6 +23,7 @@ export const AppHeader = () => {
     return (
       <>
         <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-3 h-10">
+          
           {/* <Link to={'/'} className="navbar-brand">
             <img src={image} alt="error" style={{ width: 30, height: 30, marginRight: 10 }} />
             Navbar
@@ -41,6 +42,7 @@ export const AppHeader = () => {
                   Login
                 </Link>
               </li>
+              
             )}
           </ul>
         </nav>
@@ -55,11 +57,17 @@ export const AppHeader = () => {
 
   return (
     <>
+    
       <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-3 h-10">
-        {/* <Link to={'/'} className="navbar-brand">
-          <img src={image} alt="error" style={{ width: 30, height: 30, marginRight: 10 }} />
+        {<h1 className="logo">Job Connect</h1>
+
+/* <Link to={'/'} className="navbar-brand">
+        
+          <img src={image} alt="error" style={{ w
+            idth: 30, height: 30, marginRight: 10 }} />
           Navbar
         </Link> */}
+        
         <ul className="navbar-nav mr-auto">
           {user && user.role === "Admin" && (
             <>

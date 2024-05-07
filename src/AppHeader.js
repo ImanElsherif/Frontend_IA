@@ -29,6 +29,7 @@ export const AppHeader = () => {
     <>
       <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-3 h-10">
         {/* Your navbar content */}
+        
         <ul className="navbar-nav ml-auto">
           {!token && (
             <>
