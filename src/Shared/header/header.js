@@ -128,6 +128,11 @@ export const AppHeader = () => {
                   Saved Jobs
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link to={"/seeker-Accepted"} className="nav-link">
+                  Accepted Jobs
+                </Link>
+              </li>
             </>
           )}
         </ul>
