@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { getAuthToken } from "../../../services/auth";
 
 const SavedJobsList = () => {
   const [savedJobs, setSavedJobs] = useState([]);
@@ -30,10 +31,15 @@ const SavedJobsList = () => {
   }, [userId]);
 
   const fetchJobsAndSavedJobs = async () => {
+    const { token, user } = getAuthToken();
     try {
       const [savedJobsResponse, jobsResponse] = await Promise.all([
         axios.get(`http://localhost:5024/api/savedjobs/${userId}`),
-        axios.get(`http://localhost:5024/api/jobs`)
+        axios.get(`http://localhost:5024/api/jobs`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
       ]);
   
       const savedJobsData = savedJobsResponse.data;
