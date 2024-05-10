@@ -10,6 +10,8 @@ export const ProposalList = () => {
 
   const [updatedProposals, setUpdatedProposals] = useState([]);
   const [selectedJobSeeker, setSelectedJobSeeker] = useState(null);
+  const [acceptedProposalId, setAcceptedProposalId] = useState(null); // Track accepted proposal
+
   const currentEmployerId = localStorage.getItem('userId');
 
   const fetchProposals = () => {
@@ -42,6 +44,7 @@ export const ProposalList = () => {
     })
     .then(response => {
       console.log(`Status updated to ${newStatus}:`, response.data);
+      setAcceptedProposalId(proposalId); // Update state when proposal is accepted
       fetchProposals();
     })
     .catch(error => {
@@ -50,22 +53,17 @@ export const ProposalList = () => {
     });
   };
 
+  const joinProposal = (proposalId) => {
+    // Logic to join the proposal
+    console.log(`Joining proposal ${proposalId}`);
+  };
+
   const getJobName = async (jobId) => {
     try {
       const response = await axios.get(`http://localhost:5024/api/jobs/${jobId}`);
       return response.data.jobTitle;
     } catch (error) {
       console.error(`Failed to fetch job name for ID ${jobId}:`, error);
-      return 'Unknown';
-    }
-  };
-
-  const getJobSeekerName = async (jobSeekerId) => {
-    try {
-      const response = await axios.get(`http://localhost:5024/api/user/${jobSeekerId}`);
-      return response.data.name; // Assuming the response contains the job seeker's name
-    } catch (error) {
-      console.error(`Failed to fetch job seeker name for ID ${jobSeekerId}:`, error);
       return 'Unknown';
     }
   };
@@ -92,7 +90,6 @@ export const ProposalList = () => {
       });
     }
   }, [proposals]);
-  
 
   const handleJobSeekerClick = (jobSeeker) => {
     setSelectedJobSeeker(jobSeeker);
@@ -149,6 +146,11 @@ export const ProposalList = () => {
                     </button>
                   </>
                 )}
+                {proposal.status === 'Accepted' &&  ( // Display join button if proposal is accepted
+                  <button className="btn btn-primary" onClick={() => joinProposal(proposal.proposalId)}>
+                    Join Chat
+                  </button>
+                )}
               </td>
             </tr>
           ))}
@@ -189,5 +191,4 @@ export const ProposalList = () => {
   
     </div>
   );
-  
 };
