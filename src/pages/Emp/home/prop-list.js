@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 export const ProposalList = () => {
   const [proposals, setProposals] = useState({
@@ -13,13 +15,18 @@ export const ProposalList = () => {
   const [acceptedProposalId, setAcceptedProposalId] = useState(null); // Track accepted proposal
 
   const currentEmployerId = localStorage.getItem('userId');
+  const navigate = useNavigate();
 
   const fetchProposals = () => {
     axios.get(`http://localhost:5024/api/proposals/employer/${currentEmployerId}`)
       .then(response => {
+        const proposalsWithEmployerId = response.data.map(proposal => ({
+          ...proposal,
+          EmployerId: currentEmployerId // Assuming currentEmployerId is the correct employer ID
+        }));
         setProposals({
           loading: false,
-          data: response.data,
+          data: proposalsWithEmployerId,
           error: null,
         });
       })
@@ -31,6 +38,7 @@ export const ProposalList = () => {
         });
       });
   };
+  
 
   useEffect(() => {
     fetchProposals();
@@ -53,10 +61,27 @@ export const ProposalList = () => {
     });
   };
 
-  const joinProposal = (proposalId) => {
-    // Logic to join the proposal
-    console.log(`Joining proposal ${proposalId}`);
-  };
+  const joinChat = async (proposalId, senderId, receiverId, jobTitle) => {
+    try {
+      const response = await axios.post(`http://localhost:5024/api/chat/${proposalId}/join`, {
+        proposalId: proposalId,
+        senderId: senderId,
+        receiverId: receiverId,
+        jobTitle: jobTitle // Pass the job title to the backend
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log(response.data); // Assuming the response contains chat room details or a success message
+      // Redirect to the chat page after joining the chat
+      navigate(`/chat/${proposalId}/${receiverId}`);
+    } catch (error) {
+      console.error('Failed to join chat:', error);
+      alert('Failed to join chat. Please try again.');
+    }
+};
+
 
   const getJobName = async (jobId) => {
     try {
@@ -147,7 +172,7 @@ export const ProposalList = () => {
                   </>
                 )}
                 {proposal.status === 'Accepted' &&  ( // Display join button if proposal is accepted
-                  <button className="btn btn-primary" onClick={() => joinProposal(proposal.proposalId)}>
+                  <button className="btn btn-primary" onClick={() => joinChat(proposal.proposalId,proposal.EmployerId,proposal.jobSeekerId)}>
                     Join Chat
                   </button>
                 )}

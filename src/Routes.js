@@ -13,7 +13,7 @@ import SavedJobsList from "./pages/seeker/home/saved-jobs";
 import JobSeekerInfo from "./pages/seeker/home/seek-info"; 
 import { Home } from "./pages/home/home";
 import{AcceptedJobList_seek} from "./pages/seeker/home/AcceptedJobList_seek"; 
-
+import ChatPage from './pages/chat';
 export const routes = createBrowserRouter([
   {
     path: "", //localhost:3000
@@ -45,13 +45,21 @@ export const routes = createBrowserRouter([
       // Emp Routes
       {path: "/emp-home",element: <AddJob />,},
       {path: "/prop-list",element: <ProposalList />,},
+      {
+        path: "/chat/:proposalId",
+        element: <ChatPage />,
+      },
+      {
+        path: "/chat/:proposalId/:receiverId",
+        element: <ChatPage />,
+      },
 
       // Seeker Routes
       {path: "/seeker-home",element: <JobList_seek />,},
       {path: "/saved-jobs",element: <SavedJobsList />,},
       {path: "/seeker-info",element: <JobSeekerInfo />,},
       {path: "/seeker-Accepted",element: <AcceptedJobList_seek />,},
-      
+      {path: "/chat/:proposalId/:employerId",element: <ChatPage />,},
       {path: "*",element: <Navigate to={"/"} />,},
     ],
   },

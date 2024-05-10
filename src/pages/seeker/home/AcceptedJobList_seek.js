@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import "./seeker-home.css";
-import '@fortawesome/fontawesome-free/css/all.css';
+import { useNavigate } from 'react-router-dom';
 
 export const AcceptedJobList_seek = () => {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState({
     loading: true,
     data: [],
@@ -13,9 +13,8 @@ export const AcceptedJobList_seek = () => {
   useEffect(() => {
     fetchAcceptedJobs();
   }, []);
-
+const userId = localStorage.getItem('userId');
   const fetchAcceptedJobs = () => {
-    const userId = localStorage.getItem('userId');
     axios.get(`http://localhost:5024/api/proposals/seeker/${userId}`)
       .then(async response => {
         const jobsData = await Promise.all(response.data.map(async proposal => {
@@ -40,11 +39,32 @@ export const AcceptedJobList_seek = () => {
       });
   };
 
-  const handleJoinJob = (jobId) => {
-    // Implement join job functionality here
-    console.log(`Joining job with ID ${jobId}`);
+  const joinChat = async (proposalId, senderId, receiverId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:5024/api/chat/${proposalId}/join`,
+        {
+          proposalId: proposalId,
+          senderId: senderId,
+          receiverId: receiverId
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(response.data); // Assuming the response contains chat room details or a success message
+      // Redirect to the chat page after joining the chat
+      navigate(`/chat/${proposalId}/${receiverId}`);
+    } catch (error) {
+      console.error('Failed to join chat:', error);
+      alert('Failed to join chat. Please try again.');
+    }
   };
-
+  
+  
+  
   if (jobs.loading) {
     return <div>Loading...</div>;
   }
@@ -73,12 +93,15 @@ export const AcceptedJobList_seek = () => {
                     </div>
                     <div className="col-md-4">
                       <div className="text-end">
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => handleJoinJob(job.jobId)}
-                        >
-                          Join
-                        </button>
+                      <button
+  className="btn btn-primary"
+  onClick={() => {
+    console.log(job); // Log the job object
+    joinChat(job.proposalId, userId, job.employerId); // Use job.employerId
+  }}
+>
+  Join Chat
+</button>
                       </div>
                     </div>
                   </div>
