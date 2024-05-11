@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getAuthToken } from "../../../services/auth";
-
+import * as signalr from "@microsoft/signalr";
 
 export const AddJob = () => {
   const navigate = useNavigate();
@@ -23,17 +23,36 @@ export const AddJob = () => {
     status: "",
   });
 
+  useEffect(() => {
+    const connection = new signalr.HubConnectionBuilder()
+      .withUrl("http://localhost:5024/notify")
+      .withAutomaticReconnect()
+      .build();
+
+    connection.start()
+      .then(() => {
+        console.log("SignalR connection established.");
+      })
+      .catch(error => {
+        console.error("SignalR connection failed:", error);
+      });
+
+    connection.on("NewJobAdded", () => {
+      alert("New job added!");
+    });
+
+    connection.on("JobStatusUpdated", (jobId, newStatus) => {
+      alert(`Job status updated to ${newStatus}`);
+    });
+
+    return () => {
+      connection.stop();
+    };
+  }, []);
+
   const submit = (e) => {
     e.preventDefault();
-   
-     // Create a new Date object and adjust it to your desired timezone if needed
-  let date = new Date();
-  let localTime = date.getTime();
-  let localOffset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-  let utc = localTime + localOffset;
-  // Optionally adjust to a specific timezone (+/- hours)
-  let offset = 0;  // Change this to your desired offset from UTC
-  let postCreationDate = new Date(utc + (3600000*offset)).toISOString();
+    const postCreationDate = new Date().toISOString(); // Get current date/time in ISO string
     const userId = localStorage.getItem('userId');
     const payload = {
       EmployerId: userId,
@@ -51,33 +70,28 @@ export const AddJob = () => {
 
     setJobState({ ...jobState, loading: true });
     const { token, user } = getAuthToken();
-    axios.post("http://localhost:5024/api/jobs", 
-    payload,
-    {
+    axios.post("http://localhost:5024/api/jobs", payload, {
       headers: {
-        
         Authorization: `Bearer ${token}`,
-        
       },
     })
-  .then((response) => {
-    console.log("Response:", response.data);
-    setJobState(prevState => ({
-      ...prevState,
-      loading: false,  // Ensure loading is set to false upon success
-      result: response.data
-    }));
-  })
-  .catch((errors) => {
-    console.error("Error:", errors);
-    const errorMessages = errors.response?.data || [{ msg: 'An unexpected error occurred' }];
-    setJobState(prevState => ({
-      ...prevState,
-      loading: false,  // Ensure loading is set to false upon error
-      err: Array.isArray(errorMessages) ? errorMessages : [errorMessages]
-    }));
-  });
-
+      .then((response) => {
+        console.log("Response:", response.data);
+        setJobState(prevState => ({
+          ...prevState,
+          loading: false,  // Ensure loading is set to false upon success
+          result: response.data
+        }));
+      })
+      .catch((errors) => {
+        console.error("Error:", errors);
+        const errorMessages = errors.response?.data || [{ msg: 'An unexpected error occurred' }];
+        setJobState(prevState => ({
+          ...prevState,
+          loading: false,  // Ensure loading is set to false upon error
+          err: Array.isArray(errorMessages) ? errorMessages : [errorMessages]
+        }));
+      });
   };
 
   const loadingSpinner = () => (
@@ -107,10 +121,8 @@ export const AddJob = () => {
 
   return (
     <>
-      {jobState.err !== null && error()}
-      {jobState.loading ? (
-        loadingSpinner()
-      ) : (
+      {error()}
+      {jobState.loading ? loadingSpinner() : (
         <div className="container h-100">
           <div className="row h-100 justify-content-center align-items-center">
             <div className="col-xl-12">
